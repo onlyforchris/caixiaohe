@@ -1,0 +1,29 @@
+__pycache__/
+*.py[cod]
+*.tmp
+*.log
+.venv/
+.env
+.env.*
+build/
+dist/
+*.spec
+*.iss
+.pytest_cache/
+
+# 运行期产生的用户数据
+config.json
+invoice_ledger.json
+used_ledger.json
+financekit.db
+financekit.db-*
+python_path.txt
+backups/
+outputs/
+.wmi_launch.log
+
+# 工作区临时产物
+.workbuddy/
+spark-output/
+vibe_images/
+release/

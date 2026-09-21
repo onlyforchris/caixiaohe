@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="zh-CN" data-page-node-id="j5e8ijg3h9hOYGXkcaOIdb">
+<head data-page-node-id="Wq9NocJWVFcOuqUnWzcXOk">
+<meta charset="utf-8" data-page-node-id="p74x5GFems1UIGS5V875AZ">
+<meta name="viewport" content="width=device-width,initial-scale=1" data-page-node-id="5hDs0qGS4un7HaL795un4X">
+<title>财小盒 · 发票管家</title>
+<style>
+:root{
+  --primary:#2563eb;--primary-dark:#1d4ed8;--navy:#0f172a;--ink:#1e293b;
+  --muted:#64748b;--line:#e2e8f0;--soft:#f8fafc;--blue-soft:#eff6ff;
+  --green:#059669;--green-soft:#ecfdf5;--amber:#b45309;--amber-soft:#fffbeb;
+  --red:#dc2626;--red-soft:#fef2f2;--shadow:0 1px 2px #0f172a08,0 8px 24px #0f172a0a;
+  --radius:10px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#f1f5f9;color:var(--ink);font:14px/1.5 "Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}
+a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{width:min(1280px,calc(100% - 40px));margin:auto}
+
+/* Header */
+header{background:#fff;border-bottom:1px solid var(--line)}
+header .wrap{min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;flex-wrap:wrap}
+h1{font-size:18px;margin:0;color:var(--navy);letter-spacing:-.01em}
+h1 small{font-size:12px;font-weight:400;color:var(--muted);margin-left:8px}
+.brand-block{display:flex;flex-direction:column;gap:8px;min-width:0}
+.tool-nav{display:none}
+.back-btn{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:4px 14px 4px 10px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--muted);font-weight:600;font-size:13px;cursor:pointer;transition:all .15s}
+.back-btn:hover{border-color:#93c5fd;color:var(--primary);background:var(--blue-soft)}
+.back-btn svg{width:14px;height:14px}
+
+/* Tool Hub */
+.hub{padding:0}
+.hub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:900px){.hub-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.hub-grid{grid-template-columns:1fr}}
+
+.hub-card{background:#fff;border-radius:14px;padding:22px 24px;border:1px solid var(--line);cursor:pointer;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s,border-color .25s;position:relative;overflow:hidden;animation:hubCardIn .4s ease-out both}
+.hub-card:nth-child(1){animation-delay:.05s}
+.hub-card:nth-child(2){animation-delay:.1s}
+.hub-card:nth-child(3){animation-delay:.15s}
+.hub-card:nth-child(4){animation-delay:.2s}
+.hub-card:nth-child(5){animation-delay:.25s}
+@keyframes hubCardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.hub-card:hover{transform:translateY(-4px);border-color:var(--card-accent,var(--primary));box-shadow:0 8px 30px color-mix(in srgb,var(--card-accent,var(--primary)) 12%,transparent),0 2px 8px rgba(0,0,0,.04)}
+.hub-card:hover .hub-card-icon{transform:scale(1.08);transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.hub-card:active{transform:translateY(0) scale(.97);transition-duration:.1s}
+.hub-card-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.hub-card-ripple{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:inherit}
+.hub-card-ripple span{position:absolute;border-radius:50%;background:color-mix(in srgb,var(--card-accent,var(--primary)) 15%,transparent);transform:scale(0);animation:hubRipple .5s ease-out forwards}
+@keyframes hubRipple{to{transform:scale(3);opacity:0}}
+.hub-card-icon svg{width:22px;height:22px}
+.hub-card-name{font-size:15px;font-weight:600;letter-spacing:-.01em;color:var(--navy);margin-bottom:5px}
+.hub-card-desc{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:16px}
+.hub-card-meta{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--line)}
+.hub-card-status{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500}
+.hub-status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.hub-status-dot.green{background:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+.hub-status-dot.orange{background:var(--amber);box-shadow:0 0 0 3px var(--amber-soft)}
+.hub-status-dot.gray{background:#aeaeb2;box-shadow:0 0 0 3px #f0f0f2}
+.hub-card-time{font-size:12px;color:#aeaeb2}
+
+.hub-card.theme-blue .hub-card-icon{background:var(--blue-soft)}
+.hub-card.theme-blue .hub-card-icon svg{color:var(--primary);stroke:var(--primary)}
+.hub-card.theme-blue{--card-accent:var(--primary)}
+.hub-card.theme-blue .hub-card-status{color:var(--primary)}
+
+.hub-card.theme-purple .hub-card-icon{background:#f5eefb}
+.hub-card.theme-purple .hub-card-icon svg{color:#af52de;stroke:#af52de}
+.hub-card.theme-purple{--card-accent:#af52de}
+.hub-card.theme-purple .hub-card-status{color:#8e44b5}
+
+.hub-card.theme-green .hub-card-icon{background:var(--green-soft)}
+.hub-card.theme-green .hub-card-icon svg{color:var(--green);stroke:var(--green)}
+.hub-card.theme-green{--card-accent:var(--green)}
+.hub-card.theme-green .hub-card-status{color:#248a3d}
+
+.hub-card.theme-orange .hub-card-icon{background:var(--amber-soft)}
+.hub-card.theme-orange .hub-card-icon svg{color:#ff9500;stroke:#ff9500}
+.hub-card.theme-orange{--card-accent:#ff9500}
+.hub-card.theme-orange .hub-card-status{color:#cc7700}
+
+.hub-add{border:2px dashed #d5d5da;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px;gap:10px;cursor:default;transition:all .2s}
+.hub-add:hover{border-color:#d5d5da;background:transparent;box-shadow:none;transform:none}
+.hub-add-icon{width:46px;height:46px;border-radius:50%;background:#f0f0f2;display:flex;align-items:center;justify-content:center}
+.hub-add-icon svg{width:20px;height:20px;color:#aeaeb2}
+.hub-add-label{font-size:13px;color:#aeaeb2;font-weight:500}
+
+/* Recent Activity */
+.hub-recent{margin-top:24px;background:#fff;border-radius:14px;border:1px solid var(--line);padding:20px 24px}
+.hub-recent-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.hub-recent-title{font-size:15px;font-weight:600;color:var(--navy)}
+.hub-recent-stats{font-size:12px;color:var(--muted)}
+.hub-recent-list{display:flex;flex-direction:column;gap:12px}
+.hub-recent-item{display:flex;align-items:center;gap:16px;padding:12px 16px;border-radius:10px;background:var(--soft);transition:background .15s}
+.hub-recent-item:hover{background:var(--blue-soft)}
+.hub-recent-product{font-size:11px;font-weight:600;color:var(--primary);background:var(--blue-soft);padding:2px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0}
+.hub-recent-icon{width:36px;height:36px;border-radius:8px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hub-recent-icon svg{width:18px;height:18px;color:var(--primary)}
+.hub-recent-info{flex:1;min-width:0}
+.hub-recent-name{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hub-recent-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.hub-recent-amount{font-size:14px;font-weight:600;color:var(--navy);white-space:nowrap}
+.hub-recent-empty{text-align:center;padding:24px;color:var(--muted);font-size:13px}
+
+/* Card action link */
+.hub-card-action{font-size:12px;color:var(--primary);font-weight:600;cursor:pointer;opacity:0;transition:opacity .2s}
+.hub-card:hover .hub-card-action{opacity:1}
+.hub-card-action:hover{text-decoration:underline}
+
+.header-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.header-actions button{min-height:34px;padding:6px 12px;font-size:13px;white-space:nowrap}
+main{padding:20px 0 56px}
+.module{display:none}.module.on{display:block;animation:modFadeIn .3s ease-out}
+@keyframes modFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.coming-soon{padding:56px 28px;text-align:center}
+.coming-soon h2{margin:0 0 8px;color:var(--navy)}.coming-soon p{margin:0;color:var(--muted)}
+
+/* Controls — never stretch checkboxes */
+button,input:not([type=checkbox]):not([type=radio]),select{
+  min-height:36px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:var(--ink)
+}
+input:not([type=checkbox]):not([type=radio]),select{width:100%;padding:7px 11px;outline:none}
+button{padding:7px 13px;font-weight:600;background:#fff}
+button:hover{border-color:#94a3b8;background:var(--soft)}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid #93c5fd;outline-offset:2px}
+
+/* Custom select dropdowns */
+.cs-wrap{position:relative;display:inline-block;vertical-align:middle;min-width:120px}
+.cs-wrap select{display:none!important}
+.cs-trigger{position:relative;display:inline-flex;align-items:center;gap:6px;min-width:110px;min-height:32px;padding:5px 28px 5px 10px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:var(--ink);font:inherit;font-size:13px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:border-color .15s,box-shadow .15s;user-select:none;box-sizing:border-box}
+.cs-trigger:hover{border-color:#93c5fd}
+.cs-trigger.open{border-color:var(--primary);box-shadow:0 0 0 2px #2563eb22}
+.cs-trigger:focus-visible{outline:2px solid #93c5fd;outline-offset:2px}
+.cs-trigger::after{content:'';position:absolute;right:9px;top:50%;width:6px;height:6px;border-right:1.5px solid #64748b;border-bottom:1.5px solid #64748b;transform:translateY(-65%) rotate(45deg);transition:transform .15s;pointer-events:none}
+.cs-trigger.open::after{transform:translateY(-35%) rotate(-135deg)}
+.cs-list{position:fixed;z-index:9999;min-width:140px;max-width:calc(100vw - 16px);max-height:220px;overflow-y:auto;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px #0f172a18;padding:4px;display:none}
+.cs-list.open{display:block}
+.cs-opt{display:block;width:100%;padding:7px 10px;border:0;border-radius:6px;background:transparent;color:var(--ink);font:inherit;font-size:13px;text-align:left;cursor:pointer;white-space:normal;word-break:break-word}
+.cs-opt:hover,.cs-opt.active{background:var(--blue-soft);color:var(--primary)}
+.cs-opt.sel{font-weight:600;color:var(--primary)}
+.cs-opt.placeholder{color:#94a3b8}
+.primary{border-color:var(--primary);background:var(--primary);color:#fff}
+.primary:hover{border-color:var(--primary-dark);background:var(--primary-dark)}
+button:disabled{opacity:.55;cursor:wait}
+.danger{color:var(--red)}
+input[type=checkbox],input[type=radio]{
+  width:15px;height:15px;min-height:0!important;min-width:0;margin:0;padding:0;
+  border:0;border-radius:3px;accent-color:var(--primary);flex-shrink:0;vertical-align:middle
+}
+
+/* Steps — quieter */
+.steps{display:flex;gap:8px;margin:0 0 14px;padding:0}
+.step{display:flex;align-items:center;gap:8px;flex:1;padding:10px 12px;border-radius:8px;background:#fff;border:1px solid var(--line)}
+.step:not(:last-child)::after{display:none}
+.step-num{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#e2e8f0;color:var(--muted);font-weight:700;font-size:11px;flex-shrink:0}
+.step.active .step-num,.results-ready .step-num{background:var(--primary);color:#fff}
+.step strong{display:block;color:var(--navy);font-size:13px}.step small{display:block;color:var(--muted);font-size:11px}
+
+/* Setup card — 2 columns */
+.surface{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.setup{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.9fr);padding:0;gap:0}
+.setup>*{min-width:0}
+.setup h2,.results h2{margin:0;color:var(--navy);font-size:15px}
+.setup-col{padding:18px 20px}
+.setup-col + .setup-col{border-left:1px solid var(--line)}
+.setup-col h2{margin-bottom:14px;font-weight:650}
+.field{margin-bottom:14px}
+.field label{display:block;font-weight:600;font-size:13px;margin-bottom:6px;color:var(--ink)}
+.field-hint,.hint{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.45}
+.relation{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.5}
+
+/* Path list — replaces weird chip-in-input */
+.folder-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+.folder-head label{margin:0}
+.folder-btn{white-space:nowrap;min-height:32px;padding:5px 11px;font-size:13px}
+.path-panel{
+  border:1px solid var(--line);border-radius:8px;background:var(--soft);
+  min-height:40px;max-height:148px;overflow:auto;padding:4px
+}
+.path-panel.err{border-color:var(--red);box-shadow:0 0 0 2px #dc262622}
+.path-empty{padding:10px 12px;color:#94a3b8;font-size:13px}
+.path-row{
+  display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:8px;align-items:center;
+  padding:7px 8px;border-radius:6px;background:#fff;border:1px solid transparent;margin:2px
+}
+.path-row:hover{border-color:var(--line)}
+.path-ico{
+  width:16px;height:16px;border-radius:3px;background:linear-gradient(135deg,#93c5fd,#3b82f6);
+  box-shadow:inset 0 -2px 0 #1d4ed866;opacity:.85
+}
+.path-text{
+  min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:12.5px;font-family:ui-monospace,Consolas,"Courier New",monospace;color:var(--ink)
+}
+.path-remove{
+  min-height:26px;padding:2px 8px;font-size:12px;font-weight:500;border:0;
+  background:transparent;color:var(--muted);border-radius:5px
+}
+.path-remove:hover{background:var(--red-soft);color:var(--red);border-color:transparent}
+
+/* Recognition — compact */
+.mode-grid{display:grid;gap:8px}
+.mode-card{
+  display:block;border:1px solid var(--line);border-radius:8px;padding:11px 12px;
+  cursor:pointer;transition:border-color .15s,background .15s;background:#fff
+}
+.mode-card:hover{border-color:#93c5fd}
+.mode-card.selected{border-color:var(--primary);background:#f8fbff;box-shadow:inset 0 0 0 1px var(--primary)}
+.mode-card input{width:auto;margin:1px 8px 0 0;accent-color:var(--primary)}
+.mode-title{display:flex;align-items:flex-start;font-weight:650;color:var(--navy);font-size:13px}
+.mode-card p{margin:6px 0 0 23px;color:var(--muted);font-size:12px;line-height:1.45}
+.ai-status{display:inline-flex;align-items:center;gap:5px;margin:6px 0 0 23px;color:var(--green);font-size:12px;font-weight:600}
+.status-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.ai-status.off{color:var(--amber)}
+.ai-meta{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.ai-links{display:flex;gap:12px;margin-top:6px;flex-wrap:wrap}
+.link-button{border:0;min-height:24px;padding:0;background:transparent;color:var(--primary);font-size:12px;font-weight:500}
+.link-button:hover{background:transparent;text-decoration:underline}
+
+.setup-foot{
+  grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 20px;border-top:1px solid var(--line);background:var(--soft);border-radius:0 0 12px 12px;flex-wrap:wrap
+}
+.setup-foot .primary{min-width:120px;font-size:14px;white-space:nowrap}
+.run-summary{color:var(--muted);font-size:12px;line-height:1.5;flex:1;min-width:200px}
+.secondary-settings{margin:0}
+.secondary-settings summary{color:var(--muted);cursor:pointer;font-weight:500;font-size:12px;list-style:none}
+.secondary-settings summary::-webkit-details-marker{display:none}
+.secondary-settings summary:hover{color:var(--primary)}
+.advanced{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px;padding:12px 20px 16px}
+
+#toasts{position:fixed;top:20px;right:20px;z-index:2000;display:flex;flex-direction:column;gap:10px;max-width:min(440px,calc(100vw - 40px))}
+.toast{display:flex;align-items:flex-start;gap:12px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 36px #10182818,0 2px 6px #10182810;padding:14px 16px;font-size:13px;line-height:1.55;animation:toastIn .25s ease;position:relative}
+.toast .toast-icon{flex:0 0 auto;width:28px;height:28px;display:grid;place-items:center;border-radius:8px;font-size:14px}
+.toast.info .toast-icon{background:var(--blue-soft);color:var(--primary)}
+.toast.red .toast-icon{background:var(--red-soft);color:var(--red)}
+.toast span{min-width:0;flex:1;word-break:break-word;color:var(--ink)}
+.toast.red span{color:#9f1f1f}
+.toast button{flex:0 0 auto;width:24px;height:24px;display:grid;place-items:center;border:0;border-radius:6px;background:transparent;color:var(--muted);font-size:12px;cursor:pointer;transition:.15s}
+.toast button:hover{background:var(--soft);color:var(--ink)}
+.toast.out{opacity:0;transform:translateX(14px);transition:opacity .2s,transform .2s}
+@keyframes toastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+
+/* Results */
+.results{display:block;margin-top:14px}
+.results-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.results-head h2{font-size:15px}
+.metrics{display:flex;gap:6px;flex-wrap:wrap}
+.metric{min-width:80px;padding:4px 10px;border-radius:6px;background:var(--blue-soft);color:#476080;font-size:11px;white-space:nowrap}
+.metric b{font-size:14px;color:var(--primary);margin-right:2px}
+.metric.warn{background:var(--amber-soft)}.metric.warn b{color:var(--amber)}
+.metric.risk{background:var(--red-soft)}.metric.risk b{color:var(--red)}
+
+.toolbar{display:flex;flex-direction:column;gap:0;border-bottom:1px solid var(--line)}
+.toolbar-row{display:flex;align-items:center;gap:12px;padding:10px 16px;flex-wrap:wrap}
+.toolbar-row+.toolbar-row{border-top:1px solid var(--line);background:var(--soft)}
+.toolbar-group{display:flex;align-items:center;gap:8px}
+.toolbar-label{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;letter-spacing:.02em}
+.tabs{display:flex;background:#e2e8f0;border-radius:8px;padding:2px;flex-shrink:0}
+.tabs button{border:0;min-height:30px;padding:5px 14px;background:transparent;color:var(--muted);font-size:12px;font-weight:500;border-radius:6px;transition:all .15s}
+.tabs button.on{background:#fff;color:var(--navy);box-shadow:0 1px 2px #0f172a14}
+.toolbar-search{flex:0 1 200px;min-width:120px;min-height:30px!important;padding:5px 12px;font-size:12px;border:1px solid transparent;border-radius:6px;background:transparent;transition:border-color .15s,background .15s}
+.toolbar-search::placeholder{color:var(--muted)}
+.toolbar-search:focus{border-color:var(--primary);background:#fff;outline:none}
+.category-filter{min-width:110px;min-height:30px!important;padding:5px 10px;font-size:12px}
+.toolbar-row .cs-wrap{flex:0 1 160px;min-width:120px;max-width:200px}
+.toolbar-row button{min-height:30px;padding:5px 12px;font-size:12px;white-space:nowrap;border-radius:6px}
+.toolbar-row .primary{min-height:30px}
+.toolbar-spacer{flex:1}
+.filter-group{display:flex;align-items:center;gap:8px;padding:4px 10px;background:#f8fafc;border-radius:8px;border:1px solid var(--line)}
+.filter-group .toolbar-search{flex:1 1 280px;min-width:200px}
+.filter-group .cs-wrap{flex:0 1 140px;min-width:110px;max-width:170px}
+.toolbar-export-group{opacity:.8;transition:opacity .15s}
+.toolbar-export-group:hover{opacity:1}
+.toolbar-export-group button{background:transparent;border:1px solid transparent}
+.toolbar-export-group button:hover{background:#fff;border-color:var(--line)}
+
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:800px;table-layout:fixed}
+th{background:var(--soft);color:#64748b;font-size:12px;font-weight:600;text-align:left;padding:10px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+th.check-col,td.check-col{width:42px;text-align:center;padding-left:14px;padding-right:8px}
+th:nth-child(2),td:nth-child(2){width:auto;white-space:normal;min-width:200px}
+td:nth-child(2) strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+td:nth-child(2) .hint,td:nth-child(2) .warn-text,td:nth-child(2) .dup,td:nth-child(2) .muted{white-space:normal}
+th:nth-child(3),td:nth-child(3){width:90px;text-align:right;white-space:nowrap}
+th:nth-child(4),td:nth-child(4){width:100px;white-space:nowrap}
+th:nth-child(5),td:nth-child(5){min-width:120px;max-width:180px;white-space:nowrap}
+th:nth-child(6),td:nth-child(6){width:120px;white-space:normal}
+td:nth-child(6) .hint{white-space:normal}
+th:nth-child(7),td:nth-child(7){width:100px;white-space:nowrap}
+th:nth-child(8),td:nth-child(8){width:120px;white-space:normal}
+td:nth-child(8) .dup{white-space:normal}
+th:nth-child(9),td:nth-child(9){width:60px;white-space:nowrap}
+.nowrap{white-space:nowrap}
+.seller-text{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+tbody tr{transition:background .12s}tbody tr:hover{background:#f8fafc}
+tbody tr.risk{background:#fffafa}
+.amount{font-weight:650;font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}.warn-text{color:var(--amber);font-size:12px}.dup{color:var(--red);font-size:12px}
+.row-select{min-height:30px!important;padding:4px 8px;width:100%;font-size:13px}
+.badge{border:0;min-height:28px;border-radius:999px;padding:4px 9px;background:#eef2ff;color:#2949b8;font-size:12px}
+.view-btn{border:0;min-height:28px;background:transparent;color:var(--primary);padding:2px 4px;font-weight:500}
+.view-btn:hover{background:transparent;text-decoration:underline}
+.empty{text-align:center;color:var(--muted);padding:48px;font-size:13px}
+.pager{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--line)}
+.pager-actions{display:flex;align-items:center;gap:8px}
+.pager button{min-height:30px;padding:4px 10px;font-size:13px}
+
+dialog:not([open]){display:none}
+.detail-backdrop{display:none;position:fixed;inset:0;background:#0f172a66;z-index:999}
+.detail-backdrop.open{display:block}
+.detail-dialog{display:none;position:fixed;top:20px;left:0;right:0;margin:0 auto;width:min(960px,calc(100% - 32px));height:calc(100vh - 40px);flex-direction:column;box-shadow:0 24px 60px rgba(16,24,40,0.25);border-radius:12px;background:#fff;z-index:1000;padding:0;overflow:hidden}
+.detail-dialog.open{display:flex;height:calc(100vh - 40px)}
+.detail-dialog .dialog-body{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:0;display:flex;flex-direction:column}
+.detail-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--soft);flex-shrink:0}
+.detail-header-title{font-size:14px;font-weight:600;color:var(--navy);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+.detail-header-badges{display:flex;gap:6px;flex-wrap:wrap;flex:1;justify-content:center}
+.detail-badge{padding:3px 8px;border-radius:5px;font-size:11px;font-weight:500;background:#fff;border:1px solid var(--line);color:var(--ink);white-space:nowrap}
+.detail-badge.amount{background:var(--blue-soft);border-color:#bfdbfe;color:#1e40af;font-weight:600}
+.detail-badge.warn{background:var(--amber-soft);border-color:#fde68a;color:#92400e}
+.detail-badge.risk{background:var(--red-soft);border-color:#fecaca;color:#991b1b}
+.detail-info-bar{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:4px 24px;padding:10px 20px;border-bottom:1px solid var(--line);font-size:12px;color:var(--ink)}
+.detail-info-bar .di-item{display:flex;gap:5px;align-items:baseline;min-width:0}
+.detail-info-bar .di-label{color:var(--muted);font-size:11px;flex-shrink:0}
+.detail-info-bar .di-value{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.detail-info-bar .di-value strong{font-weight:700;color:var(--navy)}
+.detail-preview-row{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--line);flex:1;min-height:480px;align-items:stretch}
+.detail-preview-row.single-col{grid-template-columns:1fr}
+.detail-preview-row .detail-preview-box{border:0;border-radius:0}
+.detail-preview-row .detail-preview-box+.detail-preview-box{border-left:1px solid var(--line)}
+.detail-preview-box{border:1px solid var(--line);border-radius:8px;background:#fff;overflow:hidden;display:flex;flex-direction:column}
+.detail-preview-label{padding:8px 12px;font-size:11px;font-weight:600;color:var(--muted);background:var(--soft);border-bottom:1px solid var(--line);flex-shrink:0}
+.detail-preview-content{padding:0;display:flex;flex-direction:column;flex:1;min-height:0;overflow:auto}
+.detail-preview-content .preview-img-wrap{flex:1;display:flex;align-items:flex-start;justify-content:center;overflow:hidden;position:relative;min-height:0;padding:12px}
+.detail-preview-content img,.detail-preview-content .preview-img{max-width:100%;object-fit:contain;border-radius:0;transform-origin:top center;transition:transform .15s ease;cursor:grab}
+.detail-preview-content .preview-frame{width:100%;flex:1;min-height:0;border:0;border-radius:0}
+.detail-preview-content .preview-empty{color:var(--muted);font-size:12px;padding:40px 20px;text-align:center}
+.preview-zoom-bar{position:absolute;top:8px;right:8px;display:flex;align-items:center;gap:3px;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,0.92);box-shadow:0 1px 4px rgba(0,0,0,0.12);z-index:2}
+.preview-zoom-bar button{width:26px;height:24px;border:1px solid #ddd;border-radius:4px;background:#fff;color:var(--ink);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.preview-zoom-bar button:hover{background:#f0f2f5}
+.preview-zoom-bar .zoom-pct{font-size:11px;color:var(--muted);min-width:32px;text-align:center}
+.detail-actions-row{display:flex;gap:16px;padding:14px 20px;border-bottom:1px solid var(--line);align-items:flex-end;flex-wrap:wrap}
+.detail-actions-row .detail-action-group{flex:0 0 auto;min-width:140px}
+.detail-actions-row .detail-action-group label{display:block;font-size:11px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.detail-actions-row .detail-action-group .cs-wrap,.detail-actions-row .detail-action-group select{width:100%;min-width:100%}
+.detail-actions-row .detail-action-group .cs-trigger{width:100%;min-width:100%}
+.detail-alert{padding:10px 14px;border-radius:10px;font-size:12px;line-height:1.55;margin:14px 20px;display:flex;align-items:flex-start;gap:8px}
+.detail-alert:last-child{margin-bottom:14px}
+.detail-alert .alert-icon{flex:0 0 auto;font-size:14px;line-height:1}
+.detail-alert.warn{background:var(--amber-soft);color:#92400e;border:1px solid #fde68a}
+.detail-alert.warn .alert-icon{color:#d97706}
+.detail-alert.ok{background:var(--green-soft);color:#146c43;border:1px solid #bbf7d0}
+.detail-alert.ok .alert-icon{color:#059669}
+.detail-alert.info{background:var(--blue-soft);color:#1e40af;border:1px solid #bfdbfe}
+.detail-alert.info .alert-icon{color:#2563eb}
+.detail-dup-section{padding:14px 20px;border-top:1px solid var(--line)}
+.detail-dup-section:empty{display:none}
+.detail-preview-stack{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.detail-preview-stack .detail-preview-box{flex:1}
+
+.dup-compare{margin-top:0}
+.dup-compare-title{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:12px}
+.dup-card{border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:12px;background:#fff}
+.dup-card:last-child{margin-bottom:0}
+.dup-card-head{font-size:12px;margin-bottom:10px;line-height:1.5}
+.dup-card-head strong{font-weight:600}
+.dup-fields{display:grid;grid-template-columns:68px 1fr 1fr 72px;gap:0;font-size:11px;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.dup-fields .df-header{display:contents;font-weight:500;color:var(--muted);background:var(--soft)}
+.dup-fields .df-header span{padding:6px 10px;border-bottom:1px solid var(--line)}
+.dup-fields .df-row{display:contents}
+.dup-fields .df-row span{padding:5px 10px;border-top:1px solid var(--line)}
+.dup-fields .df-row:nth-child(2) span{border-top:0}
+.dup-fields .df-label{color:var(--muted);background:#fafbfc}
+.dup-fields .df-row>:last-child{white-space:nowrap}
+.dup-fields .df-match{color:var(--green);font-weight:500}
+.dup-fields .df-diff{color:var(--red);font-weight:500}
+.dup-card .dup-verdict{margin-top:10px;font-size:11px;padding-top:8px;border-top:1px solid var(--line);line-height:1.5}
+
+dialog{width:min(520px,calc(100% - 28px));border:0;border-radius:12px;padding:0;box-shadow:0 24px 60px #10182840}
+dialog::backdrop{background:#0f172a66}
+.dialog-head,.dialog-foot{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+.dialog-foot{border:0;border-top:1px solid var(--line);justify-content:flex-end;gap:8px;flex-shrink:0}
+.dialog-body{padding:16px 18px}
+.dialog-body p{margin:0 0 12px}
+.dialog-body code{display:block;overflow:auto;padding:10px;background:var(--soft);border:1px solid var(--line);border-radius:8px}
+.error-title{color:var(--red)}
+.key-steps{margin:0 0 12px;padding-left:20px}.key-steps li{margin:0 0 8px}
+.key-row{display:flex;gap:8px;margin:2px 0 8px}.key-row input{flex:1;min-width:0}
+.key-status{font-weight:650;margin:0 0 10px}
+.key-status.ok{color:var(--green)}.key-status.warn{color:var(--amber)}.key-status.err{color:var(--red)}
+.category-dialog{width:min(800px,calc(100% - 28px))}
+.cat-cols,.cat-row{display:grid;grid-template-columns:170px 1fr 64px;gap:8px;margin-bottom:8px;align-items:start}
+.cat-cols{color:var(--muted);font-size:12px;padding:0 4px}
+.cat-row input{min-height:34px;padding:6px}
+.category-dialog .dialog-body{max-height:65vh;overflow:auto}
+.records-dialog{width:min(760px,calc(100% - 28px))}
+.records-dialog .dialog-body{max-height:65vh;overflow:auto}
+.rec-scroll{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:8px}
+.rec-scroll table{min-width:0;width:100%;table-layout:auto}
+.rec-scroll th,.rec-scroll td{padding:7px 8px;font-size:12.5px;white-space:nowrap}
+.rec-scroll .rec-file{max-width:260px;overflow:hidden;text-overflow:ellipsis}
+.rec-scroll .check-col{width:30px}
+.dir-list{max-height:46vh;overflow:auto;display:grid;gap:6px;margin-top:4px}
+.dir-item{display:flex;gap:9px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer}
+.dir-item:hover{border-color:#93c5fd;background:#f8fbff}
+.dir-item input{width:auto}
+.dir-item span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+@media(max-width:960px){
+  .setup{grid-template-columns:1fr}
+  .setup-col + .setup-col{border-left:0;border-top:1px solid var(--line)}
+  .advanced{grid-template-columns:1fr}
+  .toolbar-search{margin-left:0;max-width:none;flex:1 1 160px}
+  .toolbar-row{gap:6px}
+  .tabs{flex-wrap:wrap}
+}
+@media(max-width:920px){.detail-preview-row,.detail-preview-row.single-col{grid-template-columns:1fr}.detail-preview-row .detail-preview-box+.detail-preview-box{border-left:0;border-top:1px solid var(--line)}.detail-preview-content .preview-frame{height:35vh}.dup-fields{grid-template-columns:56px 1fr 1fr 60px;font-size:10px}}
+@media(max-width:760px){
+  .wrap{width:min(100% - 20px,1280px)}h1 small{display:none}main{padding-top:12px}
+  .steps{flex-direction:column;gap:6px}.step small{display:none}
+  .cat-cols{display:none}.cat-row{grid-template-columns:1fr}
+  .toolbar-row{padding:8px 10px}
+  .header-actions{gap:6px}
+  .header-actions button{padding:5px 8px;font-size:12px}
+  .detail-info-bar{gap:4px 12px;font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+/* Scrollbars */
+*{scrollbar-width:thin;scrollbar-color:#c8cdd3 transparent}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#c8cdd3;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#a0a8b4}
+::-webkit-scrollbar-corner{background:transparent}
+</style>
+</head>
+<body data-page-node-id="zyvHGRmu1nwQJLc10c1kGH">
+<header data-page-node-id="K1cqozq2FrUpHezOCwwGar"><div class="wrap" data-page-node-id="6axDLpUxEatK0GsPA9cqXJ"><div class="brand-block"><h1>财小盒 <small>v{{APP_VERSION}}</small></h1></div><div class="header-actions" id="invoiceActions" style="display:none"><span id="usedCount" class="muted" style="font-size:12px"></span><button type="button" id="recordsBtn" onclick="openRecords()">历史票据</button><button type="button" onclick="openHistory()">导入历史台账</button><button type="button" onclick="openCategories()">维护分类</button></div></div></header>
+<main class="wrap" data-page-node-id="u2CagQ2Niszd1mrrIqJeKG">
+  <div id="mod-hub" class="module on">
+    <div class="hub">
+      <div class="hub-grid">
+        <div class="hub-card theme-blue" onclick="hubClick(this,'invoice')">
+          <div class="hub-card-ripple"></div>
+          <div class="hub-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="9" y1="13" x2="15" y2="13"/>
+              <line x1="9" y1="17" x2="13" y2="17"/>
+            </svg>
+          </div>
+          <div class="hub-card-name">发票管家</div>
+          <div class="hub-card-desc">拍票、查重、归档，一站搞定</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-status" id="hubInvoiceStatus"><span class="hub-status-dot green"></span>就绪</span>
+            <span class="hub-card-action" onclick="event.stopPropagation();switchModule('invoice')">开始扫描 →</span>
+          </div>
+        </div>
+
+        <div class="hub-card theme-purple" onclick="hubClick(this,'cashflow')">
+          <div class="hub-card-ripple"></div>
+          <div class="hub-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <div class="hub-card-name">现金流预测</div>
+          <div class="hub-card-desc">看看未来 12 个月钱够不够花</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-status"><span class="hub-status-dot green"></span>数据已就绪</span>
+            <span class="hub-card-time">—</span>
+          </div>
+        </div>
+
+        <div class="hub-card theme-green" onclick="hubClick(this,'expense')">
+          <div class="hub-card-ripple"></div>
+          <div class="hub-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>
+              <line x1="2" y1="20" x2="22" y2="20"/>
+            </svg>
+          </div>
+          <div class="hub-card-name">费用看板</div>
+          <div class="hub-card-desc">各类开支一目了然</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-status"><span class="hub-status-dot gray"></span>即将上线</span>
+            <span class="hub-card-time">—</span>
+          </div>
+        </div>
+
+        <div class="hub-card theme-orange" onclick="hubClick(this,'reimburse')">
+          <div class="hub-card-ripple"></div>
+          <div class="hub-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="M7 10h4M7 14h10"/>
+            </svg>
+          </div>
+          <div class="hub-card-name">报销批次</div>
+          <div class="hub-card-desc">整理报销单，一键生成汇总表</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-status"><span class="hub-status-dot gray"></span>即将上线</span>
+            <span class="hub-card-time">—</span>
+          </div>
+        </div>
+
+        <div class="hub-card hub-add">
+          <div class="hub-add-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </div>
+          <span class="hub-add-label">更多工具即将推出</span>
+        </div>
+      </div>
+
+      <div class="hub-recent" id="hubRecent">
+        <div class="hub-recent-header">
+          <span class="hub-recent-title">最近动态</span>
+          <span class="hub-recent-stats" id="hubStats">共 0 张，已用 0 张</span>
+        </div>
+        <div class="hub-recent-list" id="hubRecentList">
+          <div class="hub-recent-empty">暂无发票记录，开始扫描后这里会显示最近的发票。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="mod-invoice" class="module">
+  <div class="steps" aria-label="查重步骤" data-page-node-id="kkBoeZtsdGZDyAYhHBBZeO">
+    <div class="step active" data-page-node-id="cLEEQAD4abBUmzVEyUyBDz"><span class="step-num" data-page-node-id="kbZhtJrzJakqvMGtQRLioD">1</span><span data-page-node-id="NeJvjONQ3920LcqDMbraaw"><strong data-page-node-id="pmW0Q4irMDugxp2ADnQ9JP">选择发票</strong><small data-page-node-id="wLWsyROYjOKylfIVTA0426">确定本次票与历史库</small></span></div>
+    <div class="step" data-page-node-id="wWsQeBtAfPFW1pPxsgs767"><span class="step-num" data-page-node-id="bAh8SHBEArer9EfKF5J69U">2</span><span data-page-node-id="0ffr0i80FWNYHW0pWBDuzb"><strong data-page-node-id="wkpYHYCEFQzctFEAOzlBYi">选择识别</strong><small data-page-node-id="U6GLJ6yOLmc5daG3A2iuUr">本地或 AI 增强</small></span></div>
+    <div class="step" data-page-node-id="pAtHGzcXODbQ0ul8IyBpmq"><span class="step-num" data-page-node-id="IlngJ1CDJALieDUD9zex3K">3</span><span data-page-node-id="2zCh423IyBF4n6hhCHlBwC"><strong data-page-node-id="CSfBg4YuVKIwkTlO3tfiEJ">查看结果</strong><small data-page-node-id="QDI4emUFxnpZxPNKBZb2l1">优先处理异常</small></span></div>
+  </div>
+
+  <section class="surface setup" aria-label="查重设置">
+    <div class="setup-col folders">
+      <h2>发票目录</h2>
+      <div class="field">
+        <div class="folder-head">
+          <label>本次新发票</label>
+          <button class="folder-btn" type="button" onclick="pickFolder('watch')">选择目录</button>
+        </div>
+        <div id="watchBox" class="path-panel" data-placeholder="尚未选择，点右侧选择"></div>
+      </div>
+      <div class="field">
+        <div class="folder-head">
+          <label>历史已用发票</label>
+          <button class="folder-btn" type="button" onclick="pickFolder('used',true)">添加目录</button>
+        </div>
+        <div id="usedBox" class="path-panel" data-placeholder="可不选；留空则只查本次新票之间的重复"></div>
+      </div>
+      <p class="relation">按票面内容比对，不依赖文件名。</p>
+    </div>
+
+    <div class="setup-col recognition">
+      <h2>识别方式</h2>
+      <div class="mode-grid">
+        <label class="mode-card" id="localCard"><span class="mode-title"><input type="radio" name="ocrMode" value="0">仅本地识别</span><p>文字 PDF / OFD 本地解析；图片走本机 OCR，不联网。</p></label>
+        <label class="mode-card" id="aiCard"><span class="mode-title"><input type="radio" name="ocrMode" value="1">AI 增强（推荐）</span><p>文字优先本地；仅图片与扫描件发送智谱。</p><span id="aiStatus" class="ai-status off"><span class="status-dot"></span><span>检测中</span></span></label>
+      </div>
+      <div id="localOcrStatus" class="hint" style="margin-top:8px"></div>
+      <div class="ai-meta">智谱视觉识别 · 自动选用最新免费模型
+        <div class="ai-links"><a href="https://docs.bigmodel.cn/cn/guide/start/pricing#%E8%A7%86%E8%A7%89%E7%90%86%E8%A7%A3" target="_blank" rel="noopener">费用说明</a><button id="testAiBtn" class="link-button" type="button" onclick="testAi()">检测 Key</button><button class="link-button" type="button" onclick="openAiHelp()">配置方法</button></div>
+      </div>
+    </div>
+
+    <div class="setup-foot">
+      <details class="secondary-settings" id="advDetails">
+        <summary>其他设置 · 归档目录、公司名称</summary>
+      </details>
+      <div id="runSummary" class="run-summary">选好新票目录后即可开始。扫描完成后优先处理异常项。</div>
+      <button id="scanBtn" class="primary" type="button" onclick="doScan()">开始查重</button>
+    </div>
+    <div class="advanced" id="advPanel" style="display:none;grid-column:1/-1">
+      <div class="field">
+        <div class="folder-head"><label>复制归档目录</label><button class="folder-btn" type="button" onclick="pickFolder('archive')">选择目录</button></div>
+        <div id="archiveBox" class="path-panel" data-placeholder="可不选"></div>
+        <div class="field-hint">仅在点击「复制归档」时写入。</div>
+      </div>
+      <div class="field">
+        <label for="company">本公司名称或别名</label>
+        <input id="company" placeholder="多个名称用分号隔开">
+        <div class="field-hint">用于识别购买方抬头。</div>
+      </div>
+    </div>
+    <div id="toasts" aria-live="polite"></div>
+  </section>
+
+  <section id="results" class="surface results" aria-labelledby="resultsTitle" data-page-node-id="Wb2ZXY95CGzh5XqGgMdFiS">
+    <div class="results-head" data-page-node-id="2dHDSwfwhJNqwqlzF9KkPH"><h2 id="resultsTitle" data-page-node-id="HuOBBXaLaJMUCeFD2iiQOs">查重结果</h2><div id="metrics" class="metrics" data-page-node-id="NEqU2ZpCFUDAoJIjFEwGFE"></div></div>
+    <div class="toolbar">
+      <div class="toolbar-row">
+        <div class="tabs" id="tabs"><button type="button" data-filter="review" class="on">待处理</button><button type="button" data-filter="new">本次新票</button><button type="button" data-filter="reused">历史重复</button><button type="button" data-filter="all">全部</button></div>
+        <div class="filter-group">
+          <input id="search" class="toolbar-search" aria-label="搜索发票" placeholder="搜索号码、销售方或文件名">
+          <select id="categoryFilter" class="category-filter" aria-label="筛选分类"><option value="">全部分类</option></select>
+        </div>
+        <div class="toolbar-group">
+          <span class="toolbar-label">标记状态</span>
+          <select id="verifyBulk" class="category-filter" aria-label="批量设置查验状态"><option value="">选择状态…</option><option>未查验</option><option>已查验通过</option><option>查验异常</option></select>
+        </div>
+        <div class="toolbar-group">
+          <span class="toolbar-label">批量退回</span>
+          <select id="rejectBulk" class="category-filter" aria-label="批量设置退回原因"><option value="">选择原因…</option><option value="">（清除退回）</option><option>重复报销</option><option>抬头/税号不符</option><option>疑似假票</option><option>金额不符</option><option>票面信息不全</option><option>其他</option></select>
+        </div>
+        <span class="toolbar-spacer"></span>
+        <div class="toolbar-group toolbar-export-group">
+          <button type="button" onclick="exportXlsx()" title="导出分类汇总表">汇总表</button>
+          <button type="button" onclick="exportWorksheet()" title="导出审核底稿">底稿</button>
+        </div>
+        <div class="toolbar-group">
+          <button class="primary" type="button" onclick="closeBatch()">结案并入库</button>
+        </div>
+      </div>
+    </div>
+    <div class="table-wrap" data-page-node-id="jkiHVv2LNBNMfYzbTsjnMA"><table data-page-node-id="mNJ2CW6GIMRsRdEJJBYDR2"><thead data-page-node-id="PyePmXhSyiPSOXfVJDOhPc"><tr data-page-node-id="3CgTPaVPuQCWpMIDmFYksU"><th class="check-col"><input id="checkAll" type="checkbox" aria-label="全选"></th><th data-page-node-id="S0mTjnE5FExh6pvk2q7ahF">发票</th><th data-page-node-id="yih6TFdfBkDvsPW9ElGcBQ">金额</th><th data-page-node-id="IO2tgMVW7WduIS8KimHAse">日期</th><th data-page-node-id="D2Uhg6xR4JIbJSZJkGB6Da">销售方</th><th data-page-node-id="GWwe25xpqyqGXRKM7UI40G">分类</th><th data-page-node-id="TOSXJsVC39mbermYp2FXmE">状态</th><th data-page-node-id="eT38O2cInk2ajGfJEkcZde">核验</th><th data-page-node-id="cLeEjBhNwsAhMfVYhNAnZ2">操作</th></tr></thead><tbody id="tbody" data-page-node-id="H7tHGjpQq6N3srJyvy0Myr"></tbody></table></div>
+    <div class="pager" data-page-node-id="KxODnMQvVMVStgqEtDocxB"><span id="foot" data-page-node-id="5ooG3GlyTAZES6h4KdeSUc"></span><div class="pager-actions" data-page-node-id="ywR4ppsEfslP1lzFWLrTqw"><button id="prevBtn" type="button" onclick="turnPage(-1)" data-page-node-id="ctGGfswtm8zWrvGxLOtJhL">上一页</button><span id="pageText" data-page-node-id="opXBojFxcSvzqe5OlCpb3C"></span><button id="nextBtn" type="button" onclick="turnPage(1)" data-page-node-id="d49GGzkWO2BfvBt3CPhRFl">下一页</button></div></div>
+  </section>
+  </div>
+  <div id="mod-expense" class="module">
+    <section class="surface coming-soon"><h2>费用看板</h2><p>按期间汇总分类金额、同比与异常费用——下一阶段接入，将复用发票台账数据。</p></section>
+  </div>
+  <div id="mod-reimburse" class="module">
+    <section class="surface coming-soon"><h2>报销批次</h2><p>多人多票报销单、审批状态与结案归档——下一阶段在现有「结案并入库」基础上扩展。</p></section>
+  </div>
+  <div id="mod-cashflow" class="module">
+    <iframe id="cashflowFrame" src="" style="width:100%;height:calc(100vh - 110px);min-height:500px;border:0;border-radius:12px;background:#fff" title="现金流预测"></iframe>
+  </div>
+</main>
+
+<dialog id="aiDialog" data-page-node-id="FnNcqFZGrHFIu6vHzMJYwJ"><div class="dialog-head" data-page-node-id="FLlCdU9JgkWDk0eEvLGRXZ"><strong id="aiDialogTitle" data-page-node-id="CN68Tdqvf0lCDFyIn4cy2l">智谱 AI 配置</strong><button type="button" onclick="$('#aiDialog').close()" data-page-node-id="CQezemAaHBQt8GZ1nQiiAB">关闭</button></div><div class="dialog-body" data-page-node-id="OCOsPHR5HVcgXDhdMAzTEn"><p id="aiDialogText" data-page-node-id="h6rkk6yIJjf5ltaTDwAJtD"></p><p data-page-node-id="iJ3iSTZ6OxzCVUOVgiNBEY">配置很简单，只需 3 步，全程点点鼠标，不用敲任何命令：</p><ol class="key-steps" data-page-node-id="ZbuANjTSLNk7HNj7AtiH0X"><li data-page-node-id="ZbLmFRRUDdmlyBT7mHoES9">打开智谱官网 <a href="https://open.bigmodel.cn/apikey/platform" target="_blank" rel="noopener" data-page-node-id="kyzyJhBLAG0rBdAMFg0ynH">open.bigmodel.cn（点此打开）</a>，用手机号注册并登录，和注册普通网站一样；</li><li data-page-node-id="2q3JDDcl6VKXfSLd1JwZx2">点页面上的「创建 API Key」，名字随便填（比如"发票管家"），创建成功后点「复制」；</li><li data-page-node-id="KiEfpIKLRMlRfFunktzcO3">把复制来的一长串钥匙粘贴到下面的框里，点「保存并检测」，看到绿色"连接正常"就完成了。</li></ol><div class="key-row" data-page-node-id="kHCyR0m96rC9A3Me6qKs9j"><input id="apiKeyInput" type="password" autocomplete="off" placeholder="把复制的 API Key 粘贴到这里" data-page-node-id="nixun82iWBCblWSEHh5qQC"><button id="saveKeyBtn" class="primary" type="button" onclick="saveKey()" data-page-node-id="rFSwYDY3MckfpSvuQzQSDz">保存并检测</button></div><p id="keyStatus" class="key-status" hidden data-page-node-id="Rp64w3AfSFXubY6WMnEXuB"></p><p id="keyCur" class="hint" data-page-node-id="d5O5glOWaDEeKzkJVf9r2f"></p><p class="hint" data-page-node-id="58UwS2Ms8v2sb5iyLhrJxn">这串钥匙只保存在你自己的电脑里，不会上传，也不会写进项目文件。只有图片和扫描件会发给智谱做识别，文字版 PDF 不出你的电脑。</p><p class="hint" data-page-node-id="FrICPfueMkYxcUHAWqI0DS">提示"Key 无效"多半是没复制完整：回网页重新点「复制」，再粘贴一次即可。换电脑或重装系统后，重复上面 3 步就行。</p></div><div class="dialog-foot" data-page-node-id="B6zQmL7wCBE4r3M5L8s8yK"><button type="button" onclick="useLocal()" data-page-node-id="EXI7SImm6sGIc8A6aGiIMu">暂不用 AI，改用本地识别</button><button class="primary" type="button" onclick="$('#aiDialog').close()" data-page-node-id="y4RHhEqh7spP3MUCXfeHuG">完成</button></div></dialog>
+
+<dialog id="categoryDialog" class="category-dialog" data-page-node-id="YRcSArNFx8yaPHsZ7SHjyw"><div class="dialog-head" data-page-node-id="BbcCZHGxoticZlVAyOhgK2"><strong data-page-node-id="9FGkLR00zsLmCkR6kHvaBO">维护分类与二级关键词</strong><button type="button" onclick="$('#categoryDialog').close()" data-page-node-id="SIOP1Cpj86UId0ez0XMFzC">关闭</button></div><div class="dialog-body" data-page-node-id="TjZ9GFb7z9xxcnyRgaXwta"><p class="hint" data-page-node-id="2bhGKaErwXH7RS4ZCZvUQH">票面命中二级关键词后自动归入一级分类；更具体的词优先。</p><div class="cat-cols" data-page-node-id="SXjH8LvmTiyqKJmm2v2Pzl"><span data-page-node-id="CujyfA5kJOJKD32Ud2re0P">一级分类</span><span data-page-node-id="kbwM23F8pB600I50GIHxd7">二级关键词（顿号分隔）</span><span data-page-node-id="6SbHbYYzYuFUmIV8INxOyT"></span></div><div id="categoryRows" data-page-node-id="aDuCgSDqkzMFmoI8Q95KKV"></div><button type="button" onclick="addCategory()" data-page-node-id="0U6XlSIx4cCDtuWpNQSlYx">新增一级分类</button></div><div class="dialog-foot" data-page-node-id="91ARb2Ia5emk7nPFhEXkYU"><button type="button" onclick="$('#categoryDialog').close()" data-page-node-id="fnuaiVHRq5LHKdjTkc3riV">取消</button><button class="primary" type="button" onclick="saveCategories()" data-page-node-id="PtPVm3C5ALAVlBRiIwCuwP">保存分类</button></div></dialog>
+
+<div id="detailBackdrop" class="detail-backdrop" onclick="closeDetailDialog()"></div>
+<div id="detailDialog" class="detail-dialog"><div class="detail-header"><h3 id="detailTitle" class="detail-header-title">发票详情</h3><div id="detailBadges" class="detail-header-badges"></div><button type="button" onclick="closeDetailDialog()">关闭</button></div><div class="dialog-body"><div id="detailInfoBar" class="detail-info-bar"></div><div id="detailPreviewRow" class="detail-preview-row"></div><div id="detailActionsRow" class="detail-actions-row"></div><div id="detailAlertBox"></div><div id="detailDupSection" class="detail-dup-section"></div></div><div class="dialog-foot"><button id="detailUseBtn" type="button" onclick="toggleUsedFromDetail()">标记为已使用</button><button class="primary" type="button" onclick="closeDetailDialog()">关闭</button></div></div>
+
+<dialog id="closeDialog" data-page-node-id="bPJSlczBW2LTzFSkACzxcR"><div class="dialog-head" data-page-node-id="sZAeUYi6mvxHP2gFhK9mMT"><strong data-page-node-id="AGprzC6CHiVMBfMSMUlGl3">结案并入库</strong><button type="button" onclick="$('#closeDialog').close()" data-page-node-id="3TDg4DKhYKdrXoIKA5jc8j">关闭</button></div><div class="dialog-body" data-page-node-id="nWTopjopY7sfovCBVfgYPe"><p id="closeSummary" class="hint" data-page-node-id="B09BWHRXyMipC8BHPBhytI"></p><div class="field" data-page-node-id="UAjvg55zL9voqtknPHyfOD"><label for="closeBatch" data-page-node-id="l6pMoeAzaMM9VwBDHaQFcJ">批次标记（用于留痕与检索）</label><input id="closeBatch" placeholder="如 2026-09" data-page-node-id="2QDKH0rUR6vSAmbxQvWi07"></div><label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px" data-page-node-id="pJB5S59sFE1siThw5LvlE5"><input type="checkbox" id="closeArchive" checked style="width:auto;min-height:auto;margin-top:3px;accent-color:var(--primary)" data-page-node-id="6PtTZRXUtRHDc2HhtpmRoI"><span data-page-node-id="phxftvMNoCtMz3LexsRq9b">同时复制归档，按「日期_销售方_金额_号码」规范命名（需先在“其他设置”选择归档目录）</span></label><p class="hint" data-page-node-id="eP9VBhFi17w5xzEAdcVHPY">结案后：所选发票标记为已报销并写入已报销永久库，之后再次出现会被判为重复。完成后页面会自动重新查重。</p></div><div class="dialog-foot" data-page-node-id="ZQ13y7ydj7ridoNyeoKtzW"><button type="button" onclick="$('#closeDialog').close()" data-page-node-id="0FFPCIzMGKTQY0ekDpAkRw">取消</button><button class="primary" id="closeBtn" type="button" onclick="confirmClose()" data-page-node-id="YXMKOlsS5E4xqWVmTAQLDK">确认结案</button></div></dialog>
+
+<dialog id="historyDialog" data-page-node-id="DmxVwlENTEoGp3zsB33W6k"><div class="dialog-head" data-page-node-id="TVDrc7bIeodRnbxe7Soj24"><strong data-page-node-id="KoibN7Jw1EtNcWhW4RFGtK">导入历史已报销台账（冷启动）</strong><button type="button" onclick="$('#historyDialog').close()" data-page-node-id="aUdxQ76nsKzFPckM9Y6o3T">关闭</button></div><div class="dialog-body" data-page-node-id="b6czhOX6yHB53OmpwY8PZR"><p class="hint" data-page-node-id="qDXxd18McmTV5dhNeCJFV7">把财务已有的 Excel 台账<strong data-page-node-id="hZQv78r4jklEC0BGqlDBK7">另存为 CSV</strong>后，全选复制粘贴到下面。系统会自动识别「发票号码」「金额」「开票日期」「销售方」列（列顺序不限），导入后的发票会进入<strong data-page-node-id="UrDIG7VYD1NAOrx2t9AlCS">已报销永久库</strong>，之后查重立即生效。</p><textarea id="historyCsv" rows="9" style="width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:9px 12px;font:13px/1.5 ui-monospace,Consolas,monospace" placeholder="发票号码,开票日期,金额,销售方&#10;24312000000112345678,2026-08-01,100.45,某某餐饮店"></textarea><div class="field" style="margin-top:10px" data-page-node-id="U55MePJCu2VHmZHBfgVHdP"><label for="historyBatch" data-page-node-id="caIUC6V69xTA6AeEubywlx">批次标记（可选，如 2026-08）</label><input id="historyBatch" placeholder="留空则记为「历史导入」" data-page-node-id="QnYsoi4axYZF9Be3qfzl1H"></div><p class="hint" data-page-node-id="eghTcIaPvhds6x1XsVItTq">安全说明：内容只写入本机已报销库，不上传；导入不会改动任何发票文件。</p></div><div class="dialog-foot" data-page-node-id="Si3Fs81m2YWaU1aLXsE80J"><button type="button" onclick="$('#historyDialog').close()" data-page-node-id="8QYK1vhYvFVraig7FO42JM">取消</button><button class="primary" id="historyBtn" type="button" onclick="submitHistory()" data-page-node-id="fWh3OUrAuf2s29sXmUHnp5">导入</button></div></dialog>
+
+<dialog id="recordsDialog" class="records-dialog"><div class="dialog-head"><strong>历史票据管理</strong><button type="button" onclick="$('#recordsDialog').close()">关闭</button></div><div class="dialog-body"><p class="hint">这里列出台账里的所有票据记录。文件被移动或清空后，未报销且未结案的旧记录会在下次查重时自动清理；也可以在这里手动删除。删除前会自动备份，出问题可到「台账恢复」找回。删除「在盘」记录后，下次查重会重新识别该文件。</p><div class="toolbar-row" style="padding:0 0 10px"><div class="tabs" id="recTabs"><button type="button" data-rf="all" class="on">全部</button><button type="button" data-rf="missing">文件已不在</button><button type="button" data-rf="present">在盘</button></div><input id="recSearch" class="toolbar-search" placeholder="搜索文件名 / 销售方 / 号码" aria-label="搜索历史票据"><span id="recCount" class="muted" style="font-size:12px"></span></div><div class="rec-scroll"><table><thead><tr><th class="check-col"><input type="checkbox" id="recCheckAll" aria-label="全选"></th><th>文件</th><th>金额</th><th>状态</th><th>操作</th></tr></thead><tbody id="recTbody"></tbody></table></div></div><div class="dialog-foot"><button type="button" id="recCleanBtn" onclick="recCleanMissing(this)">一键清理「文件已不在」</button><button type="button" id="recDelBtn" onclick="recDeleteSelected(this)">删除勾选的记录</button><button class="primary" type="button" onclick="$('#recordsDialog').close()">完成</button></div></dialog>
+
+<dialog id="dirDialog" data-page-node-id="KLBHnkZvkOaUTDfMIMvCIK"><div class="dialog-head" data-page-node-id="WYOGw0AaCvprMUk9HSyBOe"><strong data-page-node-id="A6gJVYh73BIrhJk5Ya2akh">添加目录（可多选）</strong><button type="button" onclick="$('#dirDialog').close()" data-page-node-id="YGVYBjzmTm7GGBL5dMCPPv">关闭</button></div><div class="dialog-body" data-page-node-id="fYQmtM9XCQNDQo0iGtEpI7"><p class="hint" id="dirHint" data-page-node-id="EroGQezZ3vFBcDcY8C14c6"></p><div id="dirList" class="dir-list" data-page-node-id="25WjB6WOEZf78OJL9mDNHa"></div></div><div class="dialog-foot" data-page-node-id="ztUwCA79Av5jEDWShgCtEy"><button type="button" onclick="$('#dirDialog').close()" data-page-node-id="b6hga7f0RFsjM573pPcg8y">取消</button><button class="primary" type="button" onclick="confirmDirs()" data-page-node-id="ZXY4sZtFM22v8FmLOSDhvC">添加所选目录</button></div></dialog>
+
+<script>
+class CustomSelect{constructor(native){if(native.dataset.cs)return;native.dataset.cs='1';this.native=native;this.wrap=document.createElement('div');this.wrap.className='cs-wrap';native.parentNode.insertBefore(this.wrap,native);this.wrap.appendChild(native);this.trigger=document.createElement('button');this.trigger.type='button';this.trigger.className='cs-trigger';this.trigger.setAttribute('aria-haspopup','listbox');this.list=document.createElement('div');this.list.className='cs-list';this.list.setAttribute('role','listbox');this.wrap.appendChild(this.trigger);this.wrap.appendChild(this.list);this._render();this.trigger.addEventListener('click',()=>this.toggle());document.addEventListener('click',e=>{if(!this.wrap.contains(e.target))this.close()},{passive:true});document.addEventListener('scroll',e=>{if(!this.list.contains(e.target))this.close()},{passive:true,capture:true});this.native.addEventListener('change',()=>this._render())}_render(){const opts=this.native.querySelectorAll('option');this.list.innerHTML='';opts.forEach(o=>{const b=document.createElement('button');b.type='button';b.className='cs-opt';b.setAttribute('role','option');b.textContent=o.textContent;if(o.value===''&&!o.textContent.trim())b.classList.add('placeholder');if(o.selected)b.classList.add('sel');b.addEventListener('click',e=>{e.stopPropagation();this.native.value=o.value;this.native.dispatchEvent(new Event('change',{bubbles:true}));this._render();this.close()});this.list.appendChild(b)});const sel=this.native.selectedOptions[0];this.trigger.textContent=sel?sel.textContent:''}toggle(){const open=this.list.classList.toggle('open');this.trigger.classList.toggle('open',open);if(open)this._position()}close(){this.list.classList.remove('open');this.trigger.classList.remove('open')}_position(){const r=this.trigger.getBoundingClientRect();this.list.style.left=r.left+'px';this.list.style.top=(r.bottom+4)+'px';this.list.style.minWidth=r.width+'px';this.list.style.maxWidth='';const lr=this.list.getBoundingClientRect();if(lr.bottom>window.innerHeight-8)this.list.style.top=(r.top-lr.height-4)+'px';if(lr.right>window.innerWidth-8)this.list.style.left=(window.innerWidth-lr.width-8)+'px';if(lr.left<8)this.list.style.left='8px'}}
+function initAllCustomSelects(){document.querySelectorAll('select:not([data-cs])').forEach(s=>new CustomSelect(s))}
+const $=s=>document.querySelector(s),esc=s=>(s??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function switchModule(name){
+  document.querySelectorAll('.module').forEach(el=>el.classList.toggle('on', el.id==='mod-'+name));
+  const isHub=name==='hub';
+  const inv=document.getElementById('invoiceActions');
+  if(inv) inv.style.display=name==='invoice'?'':'none';
+  const titles={hub:'财小盒',invoice:'财小盒 · 发票管家',expense:'财小盒 · 费用看板',reimburse:'财小盒 · 报销批次',cashflow:'财小盒 · 现金流预测'};
+  document.title=titles[name]||'财小盒';
+  if(name==='cashflow'){const f=document.getElementById('cashflowFrame');const s=f.getAttribute('src');if(!s||s==='about:blank'){f.src='/cashflow-workbench.html';f.onload=()=>{try{f.style.height=Math.max(600,f.contentDocument.documentElement.scrollHeight)+'px'}catch(e){}}}}
+  if(isHub)loadDashboard();
+  if(!isHub)window.scrollTo({top:0});
+}
+function hubClick(card,module){
+  const rect=card.getBoundingClientRect();
+  const size=Math.max(rect.width,rect.height)*1.2;
+  const ripple=card.querySelector('.hub-card-ripple');
+  const span=document.createElement('span');
+  span.className='';
+  span.style.cssText=`position:absolute;border-radius:50%;transform:scale(0);animation:hubRipple .5s ease-out forwards;width:${size}px;height:${size}px;left:${rect.width/2-size/2}px;top:${rect.height/2-size/2}px;background:color-mix(in srgb,${getComputedStyle(card).getPropertyValue('--card-accent')||'var(--primary)'} 15%,transparent)`;
+  ripple.appendChild(span);
+  card.style.transform='scale(.97)';
+  card.style.transition='transform .1s';
+  setTimeout(()=>{card.style.transform='';card.style.transition='';switchModule(module);setTimeout(()=>span.remove(),500)},180);
+}
+const state={records:[],catalog:[],filter:'review',query:'',category:'',config:{},stats:{},page:1,pageSize:10,detailPath:'',watchDirs:[],usedDirs:[],archiveDirs:[]};
+const splitDirs=v=>v.split(';').map(s=>s.trim()).filter(Boolean);
+const normDir=p=>p.replace(/\//g,'\\').replace(/\\+$/,'');
+function renderChips(){const draw=(box,dirs)=>{const el=$(box);if(!el)return;if(!dirs.length){el.innerHTML=`<div class="path-empty">${esc(el.dataset.placeholder||'尚未选择')}</div>`;return}el.innerHTML=dirs.map((p,i)=>`<div class="path-row" title="${esc(p)}"><span class="path-ico" aria-hidden="true"></span><span class="path-text">${esc(p)}</span><button type="button" class="path-remove" aria-label="移除 ${esc(p)}" onclick="removeDir('${box}',${i})">移除</button></div>`).join('')};draw('#watchBox',state.watchDirs);draw('#usedBox',state.usedDirs);draw('#archiveBox',state.archiveDirs)}
+function removeDir(box,i){if(box==='#watchBox')state.watchDirs.splice(i,1);else if(box==='#usedBox')state.usedDirs.splice(i,1);else state.archiveDirs.splice(i,1);renderChips()}
+function addUsed(paths){paths.forEach(p=>{const n=normDir(p);if(!state.usedDirs.includes(n))state.usedDirs.push(n)});renderChips()}
+async function api(path,body){const r=await fetch(path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined});if(!r.ok)throw new Error((await r.json().catch(()=>({}))).error||r.status);return r.headers.get('content-type')?.includes('json')?r.json():r.text()}
+function message(text,kind='info',ttl){const el=document.createElement('div');el.className='toast '+kind;const icon=document.createElement('span');icon.className='toast-icon';icon.textContent=kind==='red'?'⚠':'ℹ';const span=document.createElement('span');span.className='toast-text';span.textContent=text;const btn=document.createElement('button');btn.type='button';btn.textContent='✕';btn.setAttribute('aria-label','关闭提醒');const kill=()=>{clearTimeout(el._t);el.classList.add('out');setTimeout(()=>el.remove(),200)};btn.onclick=kill;el.append(icon,span,btn);$('#toasts').appendChild(el);if(ttl===undefined)ttl=kind==='info'?5000:10000;if(ttl)el._t=setTimeout(kill,ttl);return el}
+function clearMessage(){$('#toasts').innerHTML=''}
+function selectedMode(){return document.querySelector('input[name="ocrMode"]:checked')?.value||'1'}
+function localOcrHtml(){const s=state.config.local_ocr_status||'idle';if(state.config.local_ocr_ready)return '<span style="color:var(--green)">本机识别已就绪</span>';if(s==='installing')return '<span style="color:var(--muted)">正在准备本机识别组件…</span>';return '<span style="color:var(--muted)">本机识别组件未就绪时，图片票可先用 AI</span>'}
+let ocrPoll=0;
+function pollLocalOcr(){if(ocrPoll)return;ocrPoll=setInterval(async()=>{try{const cfg=await api('/api/config');state.config=Object.assign({},state.config,cfg);updateMode();if(cfg.local_ocr_status!=='installing'){clearInterval(ocrPoll);ocrPoll=0;if(cfg.local_ocr_ready)message('本机图片识别组件已自动准备完成。')}}catch(e){}},15000)}
+function updateMode(){const ai=selectedMode()==='1',ready=state.config.ocr_key_configured;$('#localCard').classList.toggle('selected',!ai);$('#aiCard').classList.toggle('selected',ai);$('#aiStatus').className='ai-status '+(ready?'':'off');$('#aiStatus').lastElementChild.textContent=ready?'API Key 已配置':'API Key 未配置';$('#localOcrStatus').innerHTML=localOcrHtml();if(state.config.local_ocr_status==='installing')pollLocalOcr()}
+function openAiHelp(title='智谱 AI 配置（3 步搞定）',text='当前模型官方标注免费，但免费政策、调用频率和可用性可能调整，请以智谱平台实时信息为准。'){$('#aiDialogTitle').textContent=title;$('#aiDialogTitle').className=title.includes('不可用')?'error-title':'';$('#aiDialogText').textContent=text;$('#apiKeyInput').value='';$('#keyStatus').hidden=true;$('#keyCur').textContent=state.config.ocr_key_configured?'本机已保存的 Key：'+(state.config.key_masked||'已配置')+'，重新粘贴可覆盖。':'本机还没保存过 Key，按下面 3 步操作即可。';$('#aiDialog').showModal()}
+async function saveKey(){const input=$('#apiKeyInput'),v=input.value.trim(),st=$('#keyStatus');if(!v){st.hidden=false;st.className='key-status err';st.textContent='请先把复制的 API Key 粘贴到输入框。';return}const btn=$('#saveKeyBtn');btn.disabled=true;btn.textContent='正在保存并检测…';try{const d=await api('/api/save-key',{api_key:v});state.config.ocr_key_configured=d.configured;state.config.key_masked=d.masked;updateMode();st.hidden=false;st.className='key-status '+(d.ok?'ok':'warn');st.textContent=d.ok?'✅ '+d.message+'，直接点「开始查重」即可。':'已保存，但检测未通过：'+d.message+'。请回网页重新「复制」完整 Key 后再粘贴一次。';if(d.ok)input.value=''}catch(e){st.hidden=false;st.className='key-status err';st.textContent='保存失败：'+e.message}finally{btn.disabled=false;btn.textContent='保存并检测'}}
+function useLocal(){document.querySelector('input[name="ocrMode"][value="0"]').checked=true;updateMode();$('#aiDialog').close()}
+async function testAi(){const btn=$('#testAiBtn');btn.disabled=true;btn.textContent='检测中…';try{const d=await api('/api/ocr-status',{});state.config.ocr_key_configured=d.configured;if(d.ok){$('#aiStatus').className='ai-status';$('#aiStatus').lastElementChild.textContent='连接正常';message('智谱 AI 连接正常。')}else{updateMode();openAiHelp('AI 服务不可用',d.message)}}catch(e){openAiHelp('AI 服务不可用',e.message)}finally{btn.disabled=false;btn.textContent='检测 Key'}}
+async function pickFolder(target,multiple=false){try{const d=await api('/api/pick-folder',{initial:''});if(!d.path)return;const p=normDir(d.path);if(target==='watch'){state.watchDirs=[p];renderChips();return}if(target==='archive'){state.archiveDirs=[p];renderChips();return}const sub=await api('/api/subdirs?path='+encodeURIComponent(d.path));if(!sub.dirs.length){addUsed([p]);message('已添加目录。');return}const re=/20\d{6}|发票|报销|归档/;$('#dirHint').textContent='已选择：'+p+' —— 勾选要加入的目录（可多选）。名称含年月日/发票/报销/归档的子目录已默认勾选。';$('#dirList').innerHTML=[{path:p,label:'（所选目录本身）'+p,pre:re.test(p)}].concat(sub.dirs.map(x=>({path:normDir(x),label:x,pre:re.test(x)}))).map(x=>`<label class="dir-item"><input type="checkbox" value="${esc(x.path)}" ${x.pre?'checked':''}><span title="${esc(x.label)}">${esc(x.label)}</span></label>`).join('');$('#dirDialog').showModal()}catch(e){message(e.message,'red')}}
+function confirmDirs(){const picked=[...document.querySelectorAll('#dirList input:checked')].map(x=>x.value);if(!picked.length)return message('请先勾选要添加的目录。','red');addUsed(picked);$('#dirDialog').close()}
+function fmtRel(ts){if(!ts)return'';const s=Math.floor(Date.now()/1000-ts),m=Math.floor(s/60),h=Math.floor(m/60),d=Math.floor(h/24);if(s<60)return s+'秒前';if(m<60)return m+'分钟前';if(h<24)return h+'小时前';if(d<30)return d+'天前';return Math.floor(d/30)+'个月前'}
+async function loadDashboard(){try{const d=await api('/api/dashboard');const list=$('#hubRecentList');const stats=$('#hubStats');if(stats)stats.textContent=`共 ${d.record_count} 张，已用 ${d.used_count} 张`;if(!d.recent||!d.recent.length){if(list)list.innerHTML='<div class="hub-recent-empty">暂无发票记录，开始扫描后这里会显示最近的发票。</div>';return}if(list)list.innerHTML=d.recent.map(r=>{const amt=r.amount_cents!=null?'¥'+(r.amount_cents/100).toFixed(2):'';const meta=[r.date,r.seller,r.cat_label].filter(Boolean).join(' · ');const rel=fmtRel(r.mtime);return`<div class="hub-recent-item"><div class="hub-recent-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="hub-recent-info"><div class="hub-recent-name">${esc(r.fname)}</div><div class="hub-recent-meta">${esc(meta)}${rel?' · '+esc(rel):''}</div></div><span class="hub-recent-product">${esc(r.product||'')}</span><div class="hub-recent-amount">${esc(amt)}</div></div>`}).join('')}catch(e){}}
+async function init(){const[cfg,cats]=await Promise.all([api('/api/config'),api('/api/categories')]);state.config=cfg;state.catalog=cats;state.watchDirs=[...new Set((cfg.watch_dirs||[]).map(normDir))];state.usedDirs=[...new Set((cfg.used_dirs||[]).map(normDir))];state.archiveDirs=cfg.archive_dir?[normDir(cfg.archive_dir)]:[];$('#company').value=(cfg.company_names||[]).join(';');document.querySelector(`input[name="ocrMode"][value="${cfg.ocr_enabled===false?'0':'1'}"]`).checked=true;$('#categoryFilter').innerHTML='<option value="">全部分类</option>'+cats.map(c=>`<option value="${esc(c.id)}">${esc(c.label)}</option>`).join('');updateMode();renderChips();checkVersion(cfg);renderInitialResults();loadLedgerStatus();initAllCustomSelects();reattachScan();loadDashboard()}
+function checkVersion(cfg){if(cfg.code_stale){message('程序已更新到新版，但当前窗口运行的还是旧代码。请关闭本页，重新双击「启动发票管家.bat」，新的修复才会生效。','red');return}const pageVer=(document.querySelector('h1 small')?.textContent.match(/v([\d.]+)/)||[])[1];if(cfg.app_version&&pageVer&&cfg.app_version!==pageVer)message(`本页是旧版本 v${pageVer}，服务已是 v${cfg.app_version}：按 Ctrl+F5 刷新本页即可。`,'red')}
+function renderInitialResults(){$('#metrics').innerHTML='<span class="muted">尚未查重：选好目录并点击「开始查重」后，结果将显示在这里。</span>';renderTable()}
+function updateHubStatus(){const s=state.stats,el=$('#hubInvoiceStatus'),tEl=$('#hubInvoiceTime');if(!el)return;const review=state.records.filter(needsReview).length;if(!state.records.length){el.innerHTML='<span class="hub-status-dot green"></span>就绪';tEl.textContent='—';return}if(review){el.innerHTML=`<span class="hub-status-dot orange"></span>${review} 张待处理`;el.style.color='#b45309'}else{el.innerHTML='<span class="hub-status-dot green"></span>全部处理完毕';el.style.color='var(--green)'}tEl.textContent=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})}
+function fmtDur(s){s=Math.max(0,Math.round(s));return s>=60?Math.floor(s/60)+' 分 '+(s%60)+' 秒':s+' 秒'}
+function renderScanData(data,announce){state.records=data.records;state.config=data.config;state.stats=data.stats;state.filter=data.records.some(needsReview)?'review':'new';state.page=1;state.detailPath='';document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x.dataset.filter===state.filter));render();updateMode();document.body.classList.add('results-ready');if(data.stats.ai_error)openAiHelp('AI 服务不可用',data.stats.ai_error);else if(announce)message(data.stats.reused?`发现 ${data.stats.reused} 张与历史票重复，请优先核对。`:data.stats.warn?`发现 ${data.stats.warn} 张信息不完整，请在“待处理”中核对。`:'扫描完成，字段提取正常，未发现历史重复。',data.stats.reused||data.stats.warn?'red':'info')}
+function pollScan(busyToast,btn,announce){return new Promise(resolve=>{let fails=0;const timer=setInterval(async()=>{let st;try{st=await api('/api/scan-status');fails=0}catch(e){if(++fails>20){clearInterval(timer);if(busyToast)busyToast.remove();btn.disabled=false;btn.textContent='重新查重';message('无法获取扫描进度：'+e.message,'red');resolve(false)}return}if(st.running){const pct=st.total?Math.round(st.done*100/st.total):0;const span=busyToast&&busyToast.querySelector('.toast-text');if(span)span.textContent=`正在后台查重 ${st.done}/${st.total}${st.total?`（${pct}%）`:''} · 已用时 ${fmtDur(st.elapsed)}。可最小化网页，请勿关闭程序主窗口。`;return}clearInterval(timer);if(busyToast)busyToast.remove();btn.disabled=false;btn.textContent='重新查重';if(st.error){message('扫描失败：'+st.error,'red');resolve(false)}else if(st.result){renderScanData(st.result,announce);resolve(true)}else resolve(false)},1500)})}
+async function reattachScan(){let st;try{st=await api('/api/scan-status')}catch(e){return}if(!st||!st.running)return;const btn=$('#scanBtn');btn.disabled=true;btn.textContent='正在扫描…';const busyToast=message('检测到正在进行的后台扫描，已重新接入进度。','info',0);await pollScan(busyToast,btn,false)}
+async function doScan(announce=true){const ai=selectedMode()==='1';if(ai&&!state.config.ocr_key_configured){openAiHelp('先配置一下 AI（很快）','还没配置智谱 API Key。按下面 3 步粘贴保存即可，配好后再点「开始查重」；不急用 AI 的话，也可以先改用本地识别（文字 PDF 不受影响）。');return}const body={watch_dirs:state.watchDirs,used_dirs:state.usedDirs,archive_dir:state.archiveDirs[0]||'',company_names:splitDirs($('#company').value),ocr_enabled:ai};if(!body.watch_dirs.length){message('请先选择本次新票目录。','red');const wb=$('#watchBox');wb.classList.add('err');setTimeout(()=>wb.classList.remove('err'),2500);wb.scrollIntoView({behavior:'smooth',block:'center'});return}const btn=$('#scanBtn');btn.disabled=true;btn.textContent='正在扫描…';clearMessage();const busyToast=message('正在后台查重，请勿关闭程序主窗口。','info',0);try{const d=await api('/api/scan',body);if(d&&d.records){renderScanData(d,announce);busyToast.remove();btn.disabled=false;btn.textContent='重新查重';return}await pollScan(busyToast,btn,announce)}catch(e){message('扫描失败：'+e.message,'red');if(busyToast)busyToast.remove();btn.disabled=false;btn.textContent='重新查重'}}
+function needsReview(r){return !!(r.in_watch&&(r.warn||(r.dups||[]).length>0||(r.check_issues||[]).length>0||(r.ai_issues||[]).length>0))}
+function filtered(){const q=state.query.toLowerCase();return state.records.filter(r=>{if(state.filter==='review'&&!needsReview(r))return false;if(state.filter==='new'&&!r.in_watch)return false;if(state.filter==='reused'&&(!r.in_watch||!(r.dups||[]).some(d=>d.is_used)))return false;if(state.category&&r.cat_id!==state.category)return false;return !q||[r.fname,r.seller,r.no,r.cat_label,r.cat_rule,r.date].join(' ').toLowerCase().includes(q)})}
+function catOptions(r){return state.catalog.map(c=>`<option value="${esc(c.id)}" ${r.cat_id===c.id?'selected':''}>${esc(c.label)}</option>`).join('')}
+function render(){const s=state.stats,review=state.records.filter(needsReview).length;$('#results').className='surface results show';$('#metrics').innerHTML=`<div class="metric"><b>${s.watch_count}</b>本次新票</div><div class="metric warn"><b>${review}</b>待处理</div><div class="metric risk"><b>${s.reused}</b>历史重复</div><div class="metric"><b>${s.watch_count-s.warn-(s.itinerary||0)}</b>已完整识别</div>`;document.querySelector('[data-filter="review"]').textContent='待处理';document.querySelector('[data-filter="new"]').textContent='本次新票';document.querySelector('[data-filter="reused"]').textContent='历史重复';document.querySelector('[data-filter="all"]').textContent='全部';$('#runSummary').innerHTML=`已选择 ${state.watchDirs.length} 个新票目录和 ${state.usedDirs.length} 个历史目录。<br>${selectedMode()==='1'?'使用 AI 增强识别。':'使用本地识别。'}`;renderTable();updateHubStatus()}
+function renderTable(){const rows=filtered(),pages=Math.max(1,Math.ceil(rows.length/state.pageSize));state.page=Math.min(state.page,pages);const start=(state.page-1)*state.pageSize,shown=rows.slice(start,start+state.pageSize);$('#tbody').innerHTML=shown.map(r=>{const dups=r.dups||[],reused=r.in_watch&&dups.some(d=>d.is_used),hasDup=r.in_watch&&dups.length>0,path=esc(JSON.stringify(r.path));const vs=r.verify_status||'未查验',vcls=vs==='查验异常'?'dup':vs==='已查验通过'?'ai-status':'muted';const iss=[...(r.check_issues||[]),...(r.ai_issues||[])].join('；');return `<tr class="${reused||hasDup?'risk':''}"><td class="check-col"><input class="rowCheck" type="checkbox" data-path="${esc(r.path)}" aria-label="选择 ${esc(r.fname)}"></td><td><strong>${esc(r.fname)}</strong>${r.itinerary?(r.pair?`<div class="hint">对应发票：${esc(r.pair.fname)}</div>`:''):(r.itins||[]).length?`<div class="hint" title="${esc(r.itins.map(x=>x.fname).join('、'))}">关联行程单 ×${r.itins.length}</div>`:''}${iss?`<div class="warn-text" title="${esc(iss)}">校验：${esc(iss)}</div>`:''}${r.buyer_status==='不符'?`<div class="dup">抬头与本公司不符</div>`:''}${r.file_missing?'<div class="muted">原文件已不在（记录保留）</div>':''}${r.warn?`<div class="warn-text">${esc(r.warn)}</div>`:''}<div class="muted">${r.itinerary?'行程单（不参与识别与查重）':esc(r.no||'号码未识别')}${r.ocr?' · '+(r.ocr_engine==='local'?'本机识别':'AI 识别'):''}</div></td><td class="amount nowrap">${r.amount_cents==null?'-':'¥'+(r.amount_cents/100).toFixed(2)}</td><td class="nowrap">${esc(r.date||'-')}</td><td><div class="seller-text" title="${esc(r.seller||'')}">${esc(r.seller||'-')}</div></td><td>${r.itinerary?'<div class="hint">不参与分类</div>':`<select class="row-select" aria-label="一级分类" onchange="setCategory(${path},this.value)">${catOptions(r)}</select><div class="hint">${esc(r.cat_rule||'未匹配')}</div>`}</td><td class="nowrap">${r.itinerary?'<span class="muted">行程单</span>':reused?'<span class="dup">疑似历史重复</span>':hasDup?'<span class="dup">疑似重复</span>':r.warn?'<span class="warn-text">待人工确认</span>':'<span class="ai-status">识别正常</span>'}</td><td class="nowrap"><span class="${vcls}">${esc(vs)}</span>${r.reject_reason?`<div class="dup">退回：${esc(r.reject_reason)}</div>`:''}</td><td class="nowrap"><button class="view-btn" type="button" onclick="showDetail(${path})">查看</button></td></tr>`}).join('')||'<tr><td colspan="9" class="empty">当前没有需要处理的发票</td></tr>';$('#foot').textContent=`共 ${rows.length} 张，合计 ¥${(rows.reduce((n,r)=>n+(r.amount_cents||0),0)/100).toFixed(2)}`;$('#pageText').textContent=`${state.page} / ${pages}`;$('#prevBtn').disabled=state.page<=1;$('#nextBtn').disabled=state.page>=pages;$('#checkAll').checked=false;initAllCustomSelects()}
+function fileUrl(path){return '/api/file?path='+encodeURIComponent(path)}
+function previewError(){const c=$('#detailPreviewContent');if(c)c.innerHTML='<div class="preview-empty">预览加载失败：正在运行的服务可能是升级前的旧进程。请关闭本窗口并重新双击「启动发票管家.bat」，再打开预览。</div>'}
+function renderPreview(r,target){const ext=(r.fname.split('.').pop()||'').toLowerCase(),err='this.outerHTML=\'<div class=preview-empty>预览加载失败，请重启服务后重试</div>\'';if(ext==='pdf'){target.insertAdjacentHTML('beforeend',`<iframe class="preview-frame" src="${fileUrl(r.path)}" title="发票原文件预览" onerror="${err}"></iframe>`);return}if(['jpg','jpeg','png','bmp','webp'].includes(ext)){target.insertAdjacentHTML('beforeend',`<div class="preview-img-wrap" data-zoom="1" data-pan-x="0" data-pan-y="0"><img class="preview-img" src="${fileUrl(r.path)}" alt="发票原文件预览" onerror="${err}" onclick="zoomToggle(this)" onmousedown="startDrag(event,this)"><div class="preview-zoom-bar"><button type="button" onclick="zoomBy(this,-0.25)">−</button><button type="button" onclick="zoomReset(this)">↺</button><button type="button" onclick="zoomBy(this,0.25)">+</button><span class="zoom-pct">100%</span></div></div>`);return}if(ext==='ofd'){target.insertAdjacentHTML('beforeend','<div class="preview-empty">OFD 为国产版式文件，暂不支持在线预览；票面字段已解析，可直接核对信息。</div>');return}target.insertAdjacentHTML('beforeend','<div class="preview-empty">该文件格式暂不支持预览</div>')}
+let dragMoved=false;function startDrag(e,img){if(e.button!==0)return;const wrap=img.closest('.preview-img-wrap');if(!wrap)return;e.preventDefault();const startX=e.clientX,startY=e.clientY;const panX=parseFloat(wrap.dataset.panX)||0,panY=parseFloat(wrap.dataset.panY)||0;dragMoved=false;const onMove=ev=>{const dx=ev.clientX-startX,dy=ev.clientY-startY;if(Math.abs(dx)>3||Math.abs(dy)>3)dragMoved=true;wrap.dataset.panX=panX+dx;wrap.dataset.panY=panY+dy;applyTransform(img,wrap)};const onUp=()=>{document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);img.style.cursor='grab'};img.style.cursor='grabbing';document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onUp)}
+function applyTransform(img,wrap){const z=parseFloat(wrap.dataset.zoom)||1;const px=parseFloat(wrap.dataset.panX)||0;const py=parseFloat(wrap.dataset.panY)||0;img.style.transform=`translate(${px}px,${py}px) scale(${z})`}
+function zoomBy(btn,delta){const wrap=btn.closest('.preview-img-wrap');if(!wrap)return;let z=parseFloat(wrap.dataset.zoom)||1;z=Math.max(0.25,Math.min(5,z+delta));wrap.dataset.zoom=z;const img=wrap.querySelector('img');if(img)applyTransform(img,wrap);const pct=wrap.querySelector('.zoom-pct');if(pct)pct.textContent=Math.round(z*100)+'%'}
+function zoomReset(btn){const wrap=btn.closest('.preview-img-wrap');if(!wrap)return;wrap.dataset.zoom='1';wrap.dataset.panX='0';wrap.dataset.panY='0';const img=wrap.querySelector('img');if(img)applyTransform(img,wrap);const pct=wrap.querySelector('.zoom-pct');if(pct)pct.textContent='100%'}
+function zoomToggle(img){if(dragMoved){dragMoved=false;return}const wrap=img.closest('.preview-img-wrap');if(!wrap)return;let z=parseFloat(wrap.dataset.zoom)||1;z=z>1.1?1:2;wrap.dataset.zoom=z;if(z===1){wrap.dataset.panX='0';wrap.dataset.panY='0'}applyTransform(img,wrap);const pct=wrap.querySelector('.zoom-pct');if(pct)pct.textContent=Math.round(z*100)+'%'}
+function openDetailDialog(){$('#detailBackdrop').classList.add('open');$('#detailDialog').classList.add('open');const h=window.innerHeight||800;$('#detailDialog').style.height=(h-40)+'px';document.addEventListener('keydown',detailEscHandler)}
+function closeDetailDialog(){$('#detailBackdrop').classList.remove('open');$('#detailDialog').classList.remove('open');document.removeEventListener('keydown',detailEscHandler)}
+function detailEscHandler(e){if(e.key==='Escape')closeDetailDialog()}
+function showDetail(path){const r=state.records.find(x=>x.path===path);if(!r)return;state.detailPath=path;$('#detailPreviewRow').className='detail-preview-row single-col';$('#detailPreviewRow').innerHTML='<div class="detail-preview-box"><div class="detail-preview-label">本票预览</div><div class="detail-preview-content" id="detailPreviewContent"></div></div>';renderPreview(r,$('#detailPreviewContent'));renderDetailFields();openDetailDialog();initAllCustomSelects()}
+function dupRows(r,d){const o=d.ghost?null:state.records.find(x=>x.path===d.path),y=c=>c==null?null:'¥'+(c/100).toFixed(2);if(!o)return[['发票号码',r.no,d.no],['金额',y(r.amount_cents),y(d.amount)]];return[['发票号码',r.no,o.no],['金额',y(r.amount_cents),y(o.amount_cents)],['开票日期',r.date,o.date],['销售方',r.seller,o.seller],['发票代码',r.code,o.code]]}
+function dupVerdict(r,rows){const no=rows[0][2];if(no&&r.no&&no!==r.no)return'<span class="dup">号码不同：大概率不是同一张发票，可能只是巧合相似（如同商户同金额），请人工核对原文件。</span>';if(r.no&&no===r.no)return'<span class="ai-status">号码与关键信息一致：基本可确认是同一张发票重复提交。</span>';return'<span class="muted">关键字段不全，请人工核对两张原文件。</span>'}
+function dupDiffHtml(r){return(r.dups||[]).length?`<div class="dup-compare"><div class="dup-compare-title">重复命中明细</div>${r.dups.map(d=>{const rows=dupRows(r,d),ghost=d.ghost||!state.records.find(x=>x.path===d.path);return`<div class="dup-card"><div class="dup-card-head"><strong>${esc(d.level)}</strong> · ${esc(d.basis)}${d.is_used?' · <span class="dup">已报销</span>':''}<div class="hint" style="margin-top:2px">对方：${esc(d.folder)}/${esc(d.fname)}</div></div><div class="dup-fields"><div class="df-header"><span></span><span>本票</span><span>对方</span><span></span></div>${rows.map(([k,a,b])=>{const na=a==null||a==='',nb=b==null||b==='',same=!na&&!nb&&String(a)===String(b);return`<div class="df-row"><span class="df-label">${esc(k)}</span><span>${na?'—':esc(String(a))}</span><span>${nb?'—':esc(String(b))}</span><span>${na||nb?'<span class="muted">缺失</span>':same?'<span class="df-match">一致</span>':'<span class="df-diff">不同</span>'}</span></div>`}).join('')}</div><div class="dup-verdict">${dupVerdict(r,rows)}</div>${ghost?'<div class="hint" style="margin-top:6px">对方原文件不在当前扫描范围内（已报销库记录），仅能比对入库字段。</div>':''}</div>`}).join('')}</div>`:''}
+function renderDetailFields(){const r=state.records.find(x=>x.path===state.detailPath);if(!r)return;const reused=r.in_watch&&(r.dups||[]).some(d=>d.is_used);$('#detailTitle').textContent='发票详情 · '+r.fname;if(r.itinerary){$('#detailBadges').innerHTML='<span class="detail-badge">行程单</span>';$('#detailInfoBar').innerHTML=`<div class="di-item"><span class="di-label">文件</span><span class="di-value"><strong>${esc(r.fname)}</strong></span></div>`;$('#detailActionsRow').innerHTML='';$('#detailAlertBox').innerHTML='<div class="detail-alert ok"><span class="alert-icon">✓</span>行程单不是发票：不做票面字段识别、不参与查重与分类。</div>';$('#detailDupSection').innerHTML='';$('#detailUseBtn').style.display='none';if(r.pair){$('#detailAlertBox').insertAdjacentHTML('beforeend',`<div class="detail-alert info"><span class="alert-icon">ℹ</span>对应发票：${esc(r.pair.fname)}</div>`)}return}$('#detailUseBtn').style.display='';const iss=[...(r.check_issues||[]),...(r.ai_issues||[])].join('；'),vs=r.verify_status||'未查验';const amtBadge=r.amount_cents==null?'':'<span class="detail-badge amount">¥'+(r.amount_cents/100).toFixed(2)+'</span>';const dateBadge=r.date?'<span class="detail-badge">'+esc(r.date)+'</span>':'';const catBadge='<span class="detail-badge">'+esc(r.cat_label||'待分类')+'</span>';const vBadge=vs==='已查验通过'?'<span class="detail-badge" style="background:var(--green-soft);border-color:#bbf7d0;color:#146c43">已查验</span>':vs==='查验异常'?'<span class="detail-badge risk">异常</span>':'';$('#detailBadges').innerHTML=amtBadge+dateBadge+catBadge+vBadge;let info='';info+=`<div class="di-item"><span class="di-label">文件</span><span class="di-value"><strong>${esc(r.fname)}</strong></span></div>`;info+=`<div class="di-item"><span class="di-label">号码</span><span class="di-value">${esc(r.no||'未识别')}</span></div>`;info+=`<div class="di-item"><span class="di-label">金额</span><span class="di-value">${r.amount_cents==null?'<span style="color:var(--muted)">未识别</span>':'<strong>¥'+(r.amount_cents/100).toFixed(2)+'</strong>'}</span></div>`;info+=`<div class="di-item"><span class="di-label">日期</span><span class="di-value">${esc(r.date||'未识别')}</span></div>`;info+=`<div class="di-item"><span class="di-label">销售方</span><span class="di-value">${esc(r.seller||'未识别')}</span></div>`;if(r.buyer_status)info+=`<div class="di-item"><span class="di-label">抬头</span><span class="di-value">${esc(r.buyer_status)}${r.buyer?'（'+esc(r.buyer)+'）':''}</span></div>`;info+=`<div class="di-item"><span class="di-label">方式</span><span class="di-value">${r.ocr?(r.ocr_engine==='local'?'本机识别':'AI 识别'):'本地解析'}</span></div>`;$('#detailInfoBar').innerHTML=info;let act='';act+=`<div class="detail-action-group"><label>查验状态</label><select id="detailVerify" onchange="setVerify(${esc(JSON.stringify(r.path))},'verify_status',this.value)">${['未查验','已查验通过','查验异常'].map(v=>`<option ${vs===v?'selected':''}>${v}</option>`).join('')}</select></div>`;act+=`<div class="detail-action-group"><label>退回原因</label><select id="detailReject" onchange="setVerify(${esc(JSON.stringify(r.path))},'reject_reason',this.value)"><option value="">（不退回）</option>${['重复报销','抬头/税号不符','疑似假票','金额不符','票面信息不全','其他'].map(v=>`<option ${r.reject_reason===v?'selected':''}>${v}</option>`).join('')}</select></div>`;$('#detailActionsRow').innerHTML=act;let alerts='';if(reused||iss||r.warn){const msg=reused?'与历史库存在相同票据，请核对后处理。':'';alerts+=`<div class="detail-alert warn"><span class="alert-icon">⚠</span>${msg}${iss?esc(iss):''}${!reused&&!iss?(r.warn?esc(r.warn):''):''}</div>`}else{alerts+='<div class="detail-alert ok"><span class="alert-icon">✓</span>关键信息提取完整，未发现历史重复。</div>'}if((r.itins||[]).length)alerts+=`<div class="detail-alert info"><span class="alert-icon">ℹ</span>关联行程单：${r.itins.map(x=>esc(x.fname)).join('、')}</div>`;$('#detailAlertBox').innerHTML=alerts;const diffHtml=dupDiffHtml(r);$('#detailDupSection').innerHTML=diffHtml;const imgDups=(r.dups||[]).filter(d=>!d.ghost&&['jpg','jpeg','png','bmp','webp'].includes((d.fname.split('.').pop()||'').toLowerCase()));const existingSide=$('#detailPreviewRow').querySelectorAll('.detail-preview-box');if(existingSide.length>1){for(let i=1;i<existingSide.length;i++)existingSide[i].remove()}
+const hasDups=(r.dups||[]).length>0;$('#detailPreviewRow').classList.toggle('single-col',!hasDups);
+if(imgDups.length){let s='';imgDups.forEach(d=>{s+=`<div class="detail-preview-box"><div class="detail-preview-label">对方：${esc(d.folder)}/${esc(d.fname)}</div><div class="detail-preview-content"><div class="preview-img-wrap" data-zoom="1" data-pan-x="0" data-pan-y="0"><img class="preview-img" src="${fileUrl(d.path)}" alt="对方：${esc(d.fname)}" onerror="this.parentElement.innerHTML='<div class=\\'preview-empty\\'>对方原文件无法加载（${esc(d.folder)}/${esc(d.fname)}）<br>可能文件已移动或删除。</div>'" onclick="zoomToggle(this)" onmousedown="startDrag(event,this)"><div class="preview-zoom-bar"><button type="button" onclick="zoomBy(this,-0.25)">−</button><button type="button" onclick="zoomReset(this)">↺</button><button type="button" onclick="zoomBy(this,0.25)">+</button><span class="zoom-pct">100%</span></div></div></div></div>`});$('#detailPreviewRow').insertAdjacentHTML('beforeend',s)}else if(hasDups){$('#detailPreviewRow').insertAdjacentHTML('beforeend','<div class="detail-preview-box"><div class="detail-preview-label">对方原文件</div><div class="detail-preview-content"><div class="preview-empty">未找到对方的原文件图片，无法左右对比。<br>请在下方"重复命中明细"中核对关键字段。</div></div></div>')}$('#detailUseBtn').textContent=r.is_used?'撤销已使用':'标记为已使用'}
+function toggleUsedFromDetail(){const r=state.records.find(x=>x.path===state.detailPath);if(r)setUsed(r.path,!r.is_used)}
+function turnPage(n){state.page+=n;renderTable();$('#resultsTitle').scrollIntoView({behavior:'smooth'})}
+async function setCategory(path,id){await api('/api/override',{path,cat_id:id});const r=state.records.find(x=>x.path===path),c=state.catalog.find(x=>x.id===id);if(r&&c){r.cat_id=id;r.cat_label=c.label;r.cat_rule='人工'}renderTable()}
+async function setUsed(path,used){await api('/api/override',{path,used});const r=state.records.find(x=>x.path===path);if(r)r.is_used=used;renderTable();if(state.detailPath===path&&$('#detailDialog').classList.contains('open'))renderDetailFields();message(used?'已标记使用。':'已撤销使用标记。')}
+function selected(){return [...document.querySelectorAll('.rowCheck:checked')].map(x=>x.dataset.path)}
+async function markSelected(used){const paths=selected();if(!paths.length)return message('请先选择发票。','red');for(const path of paths)await api('/api/override',{path,used});state.records.forEach(r=>{if(paths.includes(r.path))r.is_used=used});renderTable();message(`已更新 ${paths.length} 张发票。`)}
+async function extractSelected(){const paths=selected(),target=state.archiveDirs[0]||'';if(!paths.length)return message('请先选择发票。','red');if(!target)return message('请先在“其他设置”中选择复制归档目录。','red');const d=await api('/api/extract',{paths,target_dir:target});message(`已复制 ${d.copied.length} 个，跳过 ${d.skipped.length} 个同名文件。`)}
+function exportCsv(){const scope=state.filter==='all'?'all':state.filter==='reused'?'reused':'new';const a=document.createElement('a');a.href='/api/export.csv?scope='+scope;a.download='发票台账_'+scope+'.csv';a.click()}function exportXlsx(){const scope=state.filter==='all'?'all':state.filter==='reused'?'reused':'new';const a=document.createElement('a');a.href='/api/export.xlsx?scope='+scope;a.download='发票分类汇总.xlsx';a.click()}
+function exportWorksheet(){const a=document.createElement('a');a.href='/api/export.worksheet';a.download='发票审核底稿.xlsx';a.click();message('审核底稿已导出：含按人小计、合计与退回清单。')}
+function openHistory(){$('#historyCsv').value='';$('#historyBatch').value='';$('#historyDialog').showModal()}
+async function submitHistory(){const csv=$('#historyCsv').value.trim();if(!csv)return message('请先粘贴 CSV 内容。','red');const btn=$('#historyBtn');btn.disabled=true;btn.textContent='导入中…';try{const d=await api('/api/import-history',{csv,batch:$('#historyBatch').value.trim()});$('#historyDialog').close();message(d.message);await loadLedgerStatus();if(state.records.length)await doScan(false)}catch(e){message('导入失败：'+e.message,'red')}finally{btn.disabled=false;btn.textContent='导入'}}
+let recList=[],recFilter='all',recQuery='';
+function recStatus(r){if(r.closed)return['已结案','ai-status'];if(r.used)return['已报销','dup'];if(r.file_missing)return['文件已不在','warn-text'];return['在盘','muted']}
+async function openRecords(){recFilter='all';recQuery='';$('#recSearch').value='';document.querySelectorAll('#recTabs button').forEach(x=>x.classList.toggle('on',x.dataset.rf==='all'));$('#recordsDialog').showModal();await loadRecords()}
+async function loadRecords(){try{const d=await api('/api/records-list');recList=d.records||[];renderRecords()}catch(e){message('读取历史票据失败：'+e.message,'red')}}
+function recFiltered(){const q=recQuery.toLowerCase();return recList.filter(r=>{if(recFilter==='missing'&&!r.file_missing)return false;if(recFilter==='present'&&r.file_missing)return false;return !q||[r.fname,r.seller,r.no,r.folder,r.cat_label,r.date].join(' ').toLowerCase().includes(q)})}
+function renderRecords(){const rows=recFiltered();$('#recCount').textContent=`共 ${rows.length} 条 / 全部 ${recList.length} 条`;$('#recTbody').innerHTML=rows.map(r=>{const[st,cls]=recStatus(r);const p=esc(JSON.stringify(r.path));return `<tr><td class="check-col"><input class="recCheck" type="checkbox" data-path="${esc(r.path)}" aria-label="选择 ${esc(r.fname)}"></td><td><div class="rec-file" title="${esc(r.folder||'')}/${esc(r.fname||'')}">${esc(r.fname||'-')}</div><div class="hint">${esc(r.folder||'')}${r.date?' · '+esc(r.date):''}</div></td><td class="amount nowrap">${r.amount_cents==null?'-':'¥'+(r.amount_cents/100).toFixed(2)}</td><td class="nowrap"><span class="${cls}">${st}</span></td><td class="nowrap"><button type="button" onclick="recDeleteOne(${p},this)">删除</button></td></tr>`}).join('')||'<tr><td colspan="5" class="empty">没有符合条件的记录</td></tr>';$('#recCheckAll').checked=false}
+function recArm(btn,txt){if(btn.dataset.armed){clearTimeout(+btn.dataset.tid);delete btn.dataset.armed;return true}btn.dataset.armed='1';btn.dataset.old=btn.textContent;btn.textContent=txt;btn.classList.add('danger');btn.dataset.tid=setTimeout(()=>{delete btn.dataset.armed;btn.textContent=btn.dataset.old;btn.classList.remove('danger')},4000);return false}
+async function doRecDelete(paths,btn){btn.disabled=true;try{const d=await api('/api/records-delete',{paths});message(d.message);recList=recList.filter(r=>!paths.includes(r.path));renderRecords();loadLedgerStatus();if(state.records.length){state.records=state.records.filter(r=>!paths.includes(r.path));renderTable()}}catch(e){message('删除失败：'+e.message,'red')}finally{btn.disabled=false;delete btn.dataset.armed;btn.textContent=btn.dataset.old||btn.textContent;btn.classList.remove('danger')}}
+async function recDeleteOne(path,btn){if(!recArm(btn,'确认删除？'))return;await doRecDelete([path],btn)}
+async function recDeleteSelected(btn){const paths=[...document.querySelectorAll('.recCheck:checked')].map(x=>x.dataset.path);if(!paths.length)return message('请先勾选要删除的记录。','red');if(!recArm(btn,`确认删除 ${paths.length} 条？`))return;await doRecDelete(paths,btn)}
+async function recCleanMissing(btn){const paths=recList.filter(r=>r.file_missing).map(r=>r.path);if(!paths.length)return message('没有「文件已不在」的记录。','red');if(!recArm(btn,`确认清理 ${paths.length} 条？`))return;await doRecDelete(paths,btn)}
+async function loadLedgerStatus(){try{const d=await api('/api/ledger-status');$('#usedCount').textContent='已报销库 '+d.used_count+' 张 · 台账 '+d.record_count+' 条';state.backups=d.backups||[];if(d.error){const t=message('台账异常：'+d.error+(d.backups&&d.backups.length?' 可点此从最近备份还原。':''),'red',0);if(d.backups&&d.backups.length){const b=document.createElement('button');b.textContent='从最近备份还原';b.style.cssText='border:1px solid #c62828;border-radius:7px;padding:3px 8px;background:#fff;color:#c62828;font-size:12px';b.onclick=async()=>{try{const r=await api('/api/restore-ledger',{name:d.backups[0].name});t.remove();message(r.message);await doScan(false)}catch(e){message('还原失败：'+e.message,'red')}};t.appendChild(b)}}}catch(e){}}
+async function applyBulk(field,value,sel){const paths=selected();if(!paths.length){sel.value='';return message('请先勾选发票。','red')}try{const d=await api('/api/review',{paths,[field]:value});state.records.forEach(r=>{if(paths.includes(r.path)){if(field==='verify_status')r.verify_status=value;else r.reject_reason=value}});renderTable();message(`已更新 ${d.updated} 张。`)}catch(e){message('设置失败：'+e.message,'red')}finally{sel.value=''}}
+async function setVerify(path,field,value){try{await api('/api/review',{paths:[path],[field]:value});const r=state.records.find(x=>x.path===path);if(r){if(field==='verify_status')r.verify_status=value;else r.reject_reason=value}renderTable();if(state.detailPath===path&&$('#detailDialog').classList.contains('open'))renderDetailFields()}catch(e){message('设置失败：'+e.message,'red')}}
+let closePaths=[];
+function closeBatch(){closePaths=selected();if(!closePaths.length)return message('请先勾选本批要结案的发票。','red');$('#closeBatch').value=new Date().toISOString().slice(0,7);$('#closeArchive').checked=true;$('#closeSummary').textContent='已勾选 '+closePaths.length+' 张发票，结案后写入已报销永久库。';$('#closeDialog').showModal()}
+async function confirmClose(){const batch=$('#closeBatch').value.trim(),doArchive=$('#closeArchive').checked,btn=$('#closeBtn');btn.disabled=true;btn.textContent='结案中…';try{const d=await api('/api/close-batch',{paths:closePaths,batch,archive:doArchive});$('#closeDialog').close();state.records.forEach(r=>{if(closePaths.includes(r.path)){r.is_used=true;r.closed=true}});await loadLedgerStatus();let m=`结案完成：入库 ${d.added} 张${d.copied&&d.copied.length?`，归档 ${d.copied.length} 个`:''}${d.skipped&&d.skipped.length?`，跳过 ${d.skipped.length} 个`:''}。`;if(d.no_key&&d.no_key.length)m+=` 另有 ${d.no_key.length} 张缺号码/金额未能入库（下月查不出）：${d.no_key.slice(0,5).join('、')}${d.no_key.length>5?' 等':''}。`;message(m,d.no_key&&d.no_key.length?'red':'info');await doScan(false)}catch(e){message('结案失败：'+e.message,'red')}finally{btn.disabled=false;btn.textContent='确认结案'}}
+function categoryRow(c){return `<div class="cat-row" data-id="${esc(c.id)}"><input class="cat-label" aria-label="一级分类" value="${esc(c.label)}"><input class="cat-keywords" aria-label="二级关键词" value="${esc((c.keywords||[]).join('、'))}" placeholder="二级项用顿号分隔"><button class="danger" type="button" ${c.id==='other'?'disabled':''} onclick="this.parentElement.remove()">删除</button></div>`}function openCategories(){renderCategoryRows();$('#categoryDialog').showModal()}function renderCategoryRows(){$('#categoryRows').innerHTML=state.catalog.map(categoryRow).join('')}function addCategory(){$('#categoryRows').insertAdjacentHTML('beforeend',categoryRow({id:'custom_'+Date.now().toString(36),label:'新分类',keywords:[]}))}
+async function saveCategories(){const categories=[...document.querySelectorAll('.cat-row')].map(row=>{const keywords=row.querySelector('.cat-keywords').value.split(/[、,，;；]/).map(x=>x.trim()).filter(Boolean);return{id:row.dataset.id,label:row.querySelector('.cat-label').value.trim(),note:keywords.join('、'),keywords}});try{const d=await api('/api/categories',{categories});state.catalog=d.categories;$('#categoryDialog').close();message('分类已保存。');if(state.records.length)await doScan(false)}catch(e){message('分类保存失败：'+e.message,'red')}}
+const adv=$('#advDetails'),advPanel=$('#advPanel');if(adv&&advPanel){adv.addEventListener('toggle',()=>{advPanel.style.display=adv.open?'grid':'none'});}
+document.querySelectorAll('input[name="ocrMode"]').forEach(x=>x.addEventListener('change',updateMode));$('#tabs').addEventListener('click',e=>{if(!e.target.dataset.filter)return;state.filter=e.target.dataset.filter;state.page=1;document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===e.target));renderTable()});$('#search').addEventListener('input',e=>{state.query=e.target.value;state.page=1;renderTable()});$('#categoryFilter').addEventListener('change',e=>{state.category=e.target.value;state.page=1;renderTable()});$('#checkAll').addEventListener('change',e=>document.querySelectorAll('.rowCheck').forEach(x=>x.checked=e.target.checked));$('#verifyBulk').addEventListener('change',e=>{if(e.target.value)applyBulk('verify_status',e.target.value,e.target)});$('#rejectBulk').addEventListener('change',e=>applyBulk('reject_reason',e.target.value,e.target));$('#recTabs').addEventListener('click',e=>{if(!e.target.dataset.rf)return;recFilter=e.target.dataset.rf;document.querySelectorAll('#recTabs button').forEach(x=>x.classList.toggle('on',x===e.target));renderRecords()});$('#recSearch').addEventListener('input',e=>{recQuery=e.target.value.trim();renderRecords()});$('#recCheckAll').addEventListener('change',e=>document.querySelectorAll('.recCheck').forEach(x=>x.checked=e.target.checked));init().catch(e=>message('初始化失败：'+e.message,'red'));
+</script>
+</body>
+</html>
