@@ -13,7 +13,7 @@ Windows 桌面端财务小工具合集。所有数据留在本机，不上传任
 
 ## 下载安装（普通用户）
 
-1. 从 [Releases](https://github.com/onlyforchris/caixiaohe/releases) 下载 `财小盒-vX.X.X-Setup.exe`
+1. 从 [GitHub Releases](https://github.com/onlyforchris/caixiaohe/releases) 或 [Gitee Releases](https://gitee.com/onlyforchris/caixiaohe/releases) 下载 `财小盒-vX.X.X-Setup.exe`
 2. 双击运行，按提示完成安装
 3. 双击桌面「财小盒」图标即可使用
 
@@ -21,7 +21,7 @@ Windows 桌面端财务小工具合集。所有数据留在本机，不上传任
 
 ## 升级
 
-从 [Releases](https://github.com/onlyforchris/caixiaohe/releases) 下载新版 Setup.exe，双击覆盖安装即可。用户数据（配置、台账）不会丢失。
+从 [GitHub Releases](https://github.com/onlyforchris/caixiaohe/releases) 或 [Gitee Releases](https://gitee.com/onlyforchris/caixiaohe/releases) 下载新版 Setup.exe，双击覆盖安装即可。用户数据（配置、台账）不会丢失。
 
 ## 卸载
 
