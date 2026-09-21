@@ -311,6 +311,33 @@ def code_stale():
         return False
 
 
+def check_update_info():
+    """查询 GitHub 最新 Release，与本地版本比较。"""
+    result = {"current_version": APP_VERSION, "has_update": False, "latest_version": ""}
+    try:
+        req = urllib.request.Request(
+            "https://github.com/onlyforchris/caixiaohe/releases/latest",
+            headers={"User-Agent": "caixiaohe-update-check"},
+        )
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            final_url = resp.geturl()
+        m = re.search(r"/releases/tag/([^/?#]+)", final_url)
+        if not m:
+            return result
+        from urllib.parse import unquote
+        latest = unquote(m.group(1))
+        result["latest_version"] = latest
+
+        def ver_tuple(v):
+            return tuple(int(x) for x in re.findall(r"\d+", v or ""))
+
+        if ver_tuple(latest) > ver_tuple(APP_VERSION):
+            result["has_update"] = True
+    except Exception as e:
+        result["error"] = str(e)
+    return result
+
+
 def _pip_install_ocr():
     import subprocess
     pkg = "rapidocr-onnxruntime>=1.4,<2"
@@ -939,6 +966,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, json.dumps({"base": base, "dirs": found[:200]}, ensure_ascii=False))
         if u.path == "/api/categories":
             return self._send(200, json.dumps(get_categories(), ensure_ascii=False))
+        if u.path == "/api/check-update":
+            return self._send(200, json.dumps(check_update_info(), ensure_ascii=False))
         if u.path == "/api/dashboard":
             led = load_ledger()
             recs = led.get("records", {})
