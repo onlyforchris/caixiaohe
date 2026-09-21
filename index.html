@@ -87,6 +87,20 @@ h1 small{font-size:12px;font-weight:400;color:var(--muted);margin-left:8px}
 .hub-add-icon svg{width:20px;height:20px;color:#aeaeb2}
 .hub-add-label{font-size:13px;color:#aeaeb2;font-weight:500}
 
+/* Hero Section */
+.hub-hero{background:linear-gradient(135deg,#eff6ff 0%,#f0f9ff 100%);border-radius:14px;padding:32px 28px;margin-bottom:20px;border:1px solid #dbeafe}
+.hub-hero-title{font-size:22px;font-weight:700;color:var(--navy);margin:0 0 8px;letter-spacing:-.02em}
+.hub-hero-subtitle{font-size:14px;color:var(--muted);margin:0;line-height:1.6}
+
+/* Quick Actions */
+.hub-quick{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.hub-quick-btn{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:10px 18px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.hub-quick-btn:hover{border-color:var(--primary);color:var(--primary);background:var(--blue-soft)}
+.hub-quick-btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.hub-quick-btn.primary:hover{background:var(--primary-dark);border-color:var(--primary-dark)}
+.hub-quick-btn svg{width:16px;height:16px}
+.hub-quick-btn .badge{background:var(--red);color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:4px}
+
 /* Recent Activity */
 .hub-recent{margin-top:24px;background:#fff;border-radius:14px;border:1px solid var(--line);padding:20px 24px}
 .hub-recent-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
@@ -443,6 +457,26 @@ dialog::backdrop{background:#0f172a66}
 <main class="wrap" data-page-node-id="u2CagQ2Niszd1mrrIqJeKG">
   <div id="mod-hub" class="module on">
     <div class="hub">
+      <div class="hub-hero">
+        <h2 class="hub-hero-title">本地发票管理，智能查重归档</h2>
+        <p class="hub-hero-subtitle">拍票、识别、查重、归档，全流程离线优先。AI 增强可选，数据不出本机。</p>
+      </div>
+
+      <div class="hub-quick">
+        <button class="hub-quick-btn primary" onclick="quickAction('scan')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          扫描发票
+        </button>
+        <button class="hub-quick-btn" id="quickReviewBtn" onclick="quickAction('review')" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="quickReviewText">待处理</span>
+        </button>
+        <button class="hub-quick-btn" onclick="quickAction('export')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          导出汇总
+        </button>
+      </div>
+
       <div class="hub-grid">
         <div class="hub-card theme-blue" onclick="hubClick(this,'invoice')">
           <div class="hub-card-ripple"></div>
@@ -679,6 +713,11 @@ function hubClick(card,module){
   card.style.transition='transform .1s';
   setTimeout(()=>{card.style.transform='';card.style.transition='';switchModule(module);setTimeout(()=>span.remove(),500)},180);
 }
+function quickAction(type){
+  if(type==='scan'){switchModule('invoice')}
+  else if(type==='review'){switchModule('invoice');state.filter='review';document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x.dataset.filter==='review'));render()}
+  else if(type==='export'){exportXlsx()}
+}
 const state={records:[],catalog:[],filter:'review',query:'',category:'',config:{},stats:{},page:1,pageSize:10,detailPath:'',watchDirs:[],usedDirs:[],archiveDirs:[]};
 const splitDirs=v=>v.split(';').map(s=>s.trim()).filter(Boolean);
 const normDir=p=>p.replace(/\//g,'\\').replace(/\\+$/,'');
@@ -700,7 +739,7 @@ async function testAi(){const btn=$('#testAiBtn');btn.disabled=true;btn.textCont
 async function pickFolder(target,multiple=false){try{const d=await api('/api/pick-folder',{initial:''});if(!d.path)return;const p=normDir(d.path);if(target==='watch'){state.watchDirs=[p];renderChips();return}if(target==='archive'){state.archiveDirs=[p];renderChips();return}const sub=await api('/api/subdirs?path='+encodeURIComponent(d.path));if(!sub.dirs.length){addUsed([p]);message('已添加目录。');return}const re=/20\d{6}|发票|报销|归档/;$('#dirHint').textContent='已选择：'+p+' —— 勾选要加入的目录（可多选）。名称含年月日/发票/报销/归档的子目录已默认勾选。';$('#dirList').innerHTML=[{path:p,label:'（所选目录本身）'+p,pre:re.test(p)}].concat(sub.dirs.map(x=>({path:normDir(x),label:x,pre:re.test(x)}))).map(x=>`<label class="dir-item"><input type="checkbox" value="${esc(x.path)}" ${x.pre?'checked':''}><span title="${esc(x.label)}">${esc(x.label)}</span></label>`).join('');$('#dirDialog').showModal()}catch(e){message(e.message,'red')}}
 function confirmDirs(){const picked=[...document.querySelectorAll('#dirList input:checked')].map(x=>x.value);if(!picked.length)return message('请先勾选要添加的目录。','red');addUsed(picked);$('#dirDialog').close()}
 function fmtRel(ts){if(!ts)return'';const s=Math.floor(Date.now()/1000-ts),m=Math.floor(s/60),h=Math.floor(m/60),d=Math.floor(h/24);if(s<60)return s+'秒前';if(m<60)return m+'分钟前';if(h<24)return h+'小时前';if(d<30)return d+'天前';return Math.floor(d/30)+'个月前'}
-async function loadDashboard(){try{const d=await api('/api/dashboard');const list=$('#hubRecentList');const stats=$('#hubStats');if(stats)stats.textContent=`共 ${d.record_count} 张，已用 ${d.used_count} 张`;if(!d.recent||!d.recent.length){if(list)list.innerHTML='<div class="hub-recent-empty">暂无发票记录，开始扫描后这里会显示最近的发票。</div>';return}if(list)list.innerHTML=d.recent.map(r=>{const amt=r.amount_cents!=null?'¥'+(r.amount_cents/100).toFixed(2):'';const meta=[r.date,r.seller,r.cat_label].filter(Boolean).join(' · ');const rel=fmtRel(r.mtime);return`<div class="hub-recent-item"><div class="hub-recent-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="hub-recent-info"><div class="hub-recent-name">${esc(r.fname)}</div><div class="hub-recent-meta">${esc(meta)}${rel?' · '+esc(rel):''}</div></div><span class="hub-recent-product">${esc(r.product||'')}</span><div class="hub-recent-amount">${esc(amt)}</div></div>`}).join('')}catch(e){}}
+async function loadDashboard(){try{const d=await api('/api/dashboard');const list=$('#hubRecentList');const stats=$('#hubStats');if(stats)stats.textContent=`共 ${d.record_count} 张，已用 ${d.used_count} 张`;const reviewBtn=$('#quickReviewBtn');const reviewText=$('#quickReviewText');if(reviewBtn&&reviewText){if(d.pending_review>0){reviewBtn.style.display='inline-flex';reviewText.innerHTML=`${d.pending_review} 张待处理`}else{reviewBtn.style.display='none'}}if(!d.recent||!d.recent.length){if(list)list.innerHTML='<div class="hub-recent-empty">暂无发票记录，开始扫描后这里会显示最近的发票。</div>';return}if(list)list.innerHTML=d.recent.map(r=>{const amt=r.amount_cents!=null?'¥'+(r.amount_cents/100).toFixed(2):'';const meta=[r.date,r.seller,r.cat_label].filter(Boolean).join(' · ');const rel=fmtRel(r.mtime);return`<div class="hub-recent-item"><div class="hub-recent-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="hub-recent-info"><div class="hub-recent-name">${esc(r.fname)}</div><div class="hub-recent-meta">${esc(meta)}${rel?' · '+esc(rel):''}</div></div><span class="hub-recent-product">${esc(r.product||'')}</span><div class="hub-recent-amount">${esc(amt)}</div></div>`}).join('')}catch(e){}}
 async function init(){const[cfg,cats]=await Promise.all([api('/api/config'),api('/api/categories')]);state.config=cfg;state.catalog=cats;state.watchDirs=[...new Set((cfg.watch_dirs||[]).map(normDir))];state.usedDirs=[...new Set((cfg.used_dirs||[]).map(normDir))];state.archiveDirs=cfg.archive_dir?[normDir(cfg.archive_dir)]:[];$('#company').value=(cfg.company_names||[]).join(';');document.querySelector(`input[name="ocrMode"][value="${cfg.ocr_enabled===false?'0':'1'}"]`).checked=true;$('#categoryFilter').innerHTML='<option value="">全部分类</option>'+cats.map(c=>`<option value="${esc(c.id)}">${esc(c.label)}</option>`).join('');updateMode();renderChips();checkVersion(cfg);renderInitialResults();loadLedgerStatus();initAllCustomSelects();reattachScan();loadDashboard()}
 function checkVersion(cfg){if(cfg.code_stale){message('程序已更新到新版，但当前窗口运行的还是旧代码。请关闭本页，重新双击「启动发票管家.bat」，新的修复才会生效。','red');return}const pageVer=(document.querySelector('h1 small')?.textContent.match(/v([\d.]+)/)||[])[1];if(cfg.app_version&&pageVer&&cfg.app_version!==pageVer)message(`本页是旧版本 v${pageVer}，服务已是 v${cfg.app_version}：按 Ctrl+F5 刷新本页即可。`,'red')}
 function renderInitialResults(){$('#metrics').innerHTML='<span class="muted">尚未查重：选好目录并点击「开始查重」后，结果将显示在这里。</span>';renderTable()}
